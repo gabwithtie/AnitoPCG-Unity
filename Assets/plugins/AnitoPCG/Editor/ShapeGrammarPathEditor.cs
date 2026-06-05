@@ -35,55 +35,10 @@ namespace Gbe.ShapeGrammar
         {
             DrawDefaultInspector();
 
-            EditorGUILayout.Space();
-            GUILayout.Label("Path Vertices (Local Space, Forced Y=0)", EditorStyles.boldLabel);
-
             if (Tools.current != Tool.None)
             {
                 lastActiveTool = Tools.current;
                 Tools.current = Tool.None;
-            }
-
-            int removeIndex = -1;
-            for (int i = 0; i < pathComponent.inputVertices.Count; i++)
-            {
-                GUIStyle rowStyle = new GUIStyle(GUI.skin.box);
-                if (selectedVertexIndex == i)
-                {
-                    GUI.backgroundColor = new UnityEngine.Color(0, 0.75f, 1f, 0.3f);
-                }
-
-                EditorGUILayout.BeginHorizontal(rowStyle);
-                GUI.backgroundColor = UnityEngine.Color.white;
-
-                UnityEngine.Vector3 currentVert = pathComponent.inputVertices[i];
-
-                float x = EditorGUILayout.FloatField($"V{i} X", currentVert.x);
-                float z = EditorGUILayout.FloatField($"V{i} Z", currentVert.z);
-
-                if (pathComponent.inputVertices[i].x != x || pathComponent.inputVertices[i].z != z)
-                {
-                    Undo.RecordObject(pathComponent, "Modify Path Vertex");
-                    pathComponent.inputVertices[i] = new UnityEngine.Vector3(x, 0, z);
-                    SceneView.RepaintAll();
-                }
-
-                if (GUILayout.Button(selectedVertexIndex == i ? "●" : "○", GUILayout.Width(25)))
-                {
-                    selectedVertexIndex = i;
-                    SceneView.RepaintAll();
-                }
-
-                if (GUILayout.Button("X", GUILayout.Width(25)))
-                {
-                    removeIndex = i;
-                }
-                EditorGUILayout.EndHorizontal();
-            }
-
-            if (removeIndex != -1)
-            {
-                DeleteVertex(removeIndex);
             }
 
             if (GUILayout.Button("Append Vertex to End"))

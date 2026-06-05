@@ -39,14 +39,7 @@ namespace Gbe.ShapeGrammar
 
             Shape initialShape = new Shape(sysVertices);
 
-            BuildingBlock buildingGenerator = new BuildingBlock();
-
-            // Input your new configuration properties here
-            buildingGenerator.Configuration.totalBuildingHeight = 15.0f; // Total building structure size
-            buildingGenerator.Configuration.maxFloorHeight = 3.2f;       // Will auto-calculate clean floor sizes
-            buildingGenerator.Configuration.maxWallWidth = 2.5f;         // Will auto-calculate clean segment widths
-
-            generatedTriangles = buildingGenerator.Apply(initialShape);
+            generatedTriangles = new List<Shape>() { initialShape };
         }
 
         // Reset to default shape values when component is added

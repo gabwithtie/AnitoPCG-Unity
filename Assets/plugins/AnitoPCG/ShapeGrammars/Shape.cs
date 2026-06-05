@@ -64,5 +64,17 @@ namespace Gbe.ShapeGrammar
 
             return lines;
         }
+
+        public static int GetVectorShapeHash(List<Shape> shapes)
+        {
+            // Simple robust hashing calculation mirroring your C++ vector hashing
+            int hash = 17;
+            if (shapes != null)
+            {
+                foreach (var shape in shapes)
+                    hash = hash * 31 + shape.GetHashCode();
+            }
+            return hash;
+        }
     }
 }

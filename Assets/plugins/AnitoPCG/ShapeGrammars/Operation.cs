@@ -5,6 +5,9 @@ namespace Gbe.ShapeGrammar
 {
     public abstract class Operation
     {
+        public Dictionary<string, IParameter> parameters = new Dictionary<string, IParameter>();
+        public ApplyParams currentParams;
+
         protected void Fail()
         {
             Console.Error.WriteLine("Operation failed to apply!");
@@ -25,6 +28,11 @@ namespace Gbe.ShapeGrammar
             }
 
             return output;
+        }
+
+        public virtual List<Shape> ApplySet(List<Shape> shapes, List<Shape> dependencies)
+        {
+            return ApplySet(shapes);
         }
     }
 }
