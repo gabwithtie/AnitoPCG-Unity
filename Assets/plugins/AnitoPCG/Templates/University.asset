@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d18ab57c58623945827c7d65db198fd, type: 3}
+  m_Name: University
+  m_EditorClassIdentifier: Assembly-CSharp-firstpass::Gbe.ShapeGrammar.GrammarGraphAsset
+  serializedSteps:
+  - rid: 1483956124541780039
+  - rid: 1483956124541780033
+  - rid: 1483956124541780034
+  - rid: 1483956124541780035
+  - rid: 1483956124541780036
+  - rid: 1483956124541780037
+  - rid: 1483956124541780027
+  references:
+    version: 2
+    RefIds:
+    - rid: 1483956124541780027
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.FinalOutputOperation, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 1
+        guid: 0770f772-4363-4c92-934f-8333db6099e1
+        uiPosition: {x: 890, y: 365}
+        beforeGuids:
+        - ca902202-8f3d-4044-acfb-196dea20a4ee
+        - bea00a13-df8c-44fa-aef4-90a2819aeb2c
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        dependencies: []
+    - rid: 1483956124541780033
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.Triangulate, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: 77f430a6-4a2c-413b-968f-78171b1f8a1c
+        uiPosition: {x: 217, y: 451}
+        beforeGuids: []
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        dependencies: []
+    - rid: 1483956124541780034
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.ExtrudeEdges, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: 55bdc595-3272-4a27-a76e-37d8ac36b482
+        uiPosition: {x: -26, y: 239}
+        beforeGuids:
+        - b3112324-67ed-47f4-8c95-bc19eaa89963
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        dependencies: []
+    - rid: 1483956124541780035
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.SeparateEdges, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: b3112324-67ed-47f4-8c95-bc19eaa89963
+        uiPosition: {x: -321, y: 269}
+        beforeGuids: []
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        dependencies: []
+    - rid: 1483956124541780036
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.SubdivideQuad, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: aace4532-549c-415e-91e1-7193e4257758
+        uiPosition: {x: 286, y: 197}
+        beforeGuids:
+        - 55bdc595-3272-4a27-a76e-37d8ac36b482
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        dependencies: []
+    - rid: 1483956124541780037
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.SubdivideQuad, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: ca902202-8f3d-4044-acfb-196dea20a4ee
+        uiPosition: {x: 576, y: 239}
+        beforeGuids:
+        - aace4532-549c-415e-91e1-7193e4257758
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        dependencies: []
+    - rid: 1483956124541780039
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.RepeatAlongPath, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: bea00a13-df8c-44fa-aef4-90a2819aeb2c
+        uiPosition: {x: 493, y: 451}
+        beforeGuids:
+        - 77f430a6-4a2c-413b-968f-78171b1f8a1c
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        dependencies: []

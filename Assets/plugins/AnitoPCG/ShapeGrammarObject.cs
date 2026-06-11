@@ -4,12 +4,16 @@ using System.Numerics;
 
 // Alias to avoid conflicting with UnityEngine.Vector3
 using SysVector3 = System.Numerics.Vector3;
+using System;
 
 namespace Gbe.ShapeGrammar
 {
     [ExecuteInEditMode] // Allows it to update or render while inside the editor
-    public class ShapeGrammarPath : MonoBehaviour
+    public class ShapeGrammarObject : MonoBehaviour
     {
+        [Header("Grammar Configuration Asset")]
+        public GrammarGraphAsset graphAsset;
+
         [Header("Path Settings")]
         public bool autoFixWinding = true;
 
@@ -27,8 +31,17 @@ namespace Gbe.ShapeGrammar
         [HideInInspector]
         public List<Shape> generatedTriangles = new List<Shape>();
 
+        // Dynamically driven evaluation layer proxy
+        private RuntimeGraphTree tree = new RuntimeGraphTree();
+
         public void ExecuteGrammarChain()
         {
+            if (graphAsset == null)
+            {
+                Debug.LogWarning($"[ShapeGrammarObject] Please assign a valid GrammarGraphAsset to {gameObject.name} before executing.", this);
+                return;
+            }
+
             // 1. Gather initial coordinates from your interactive viewport handles
             List<SysVector3> sysVertices = new List<SysVector3>();
             foreach (var v in inputVertices)
@@ -38,8 +51,16 @@ namespace Gbe.ShapeGrammar
             }
 
             Shape initialShape = new Shape(sysVertices);
+            SpatialDependencyRegistry mockRegistry = new SpatialDependencyRegistry();
 
-            generatedTriangles = new List<Shape>() { initialShape };
+            // Reconstruct and compile execution chains using asset layout parameters
+            tree.InitializeFromAsset(graphAsset);
+            tree.RegisterToRegistry(mockRegistry, initialShape);
+
+            // 2. Execute Synchronously 
+            generatedTriangles = tree.ApplySynchronous(initialShape, stage: 0);
+
+            Debug.Log($"[ShapeGrammarObject] Finished evaluating graph: {graphAsset.name}. Result shapes count: {generatedTriangles.Count}");
         }
 
         // Reset to default shape values when component is added

@@ -7,6 +7,7 @@ namespace Gbe.ShapeGrammar
     public class SubdivideQuad : Operation
     {
         public float MaxWidth { get; set; } = 1.0f;
+        public int EdgeBasis { get; set; } = 0;
         public int FinalSegmentCount { get; private set; } = 0;
 
         public override List<Shape> Apply(Shape shape)
@@ -18,28 +19,7 @@ namespace Gbe.ShapeGrammar
                 return new List<Shape>();
             }
 
-            // Step 1: Identify which side index is marked (0, 1, 2, or 3)
-            if (!shape.Data.TryGetValue("edge", out List<int> marked))
-            {
-                return new List<Shape> { shape }; // Return original array unchanged if no active markup metadata exists
-            }
-
-            int markedSide = -1;
-            for (int i = 0; i < 4; ++i)
-            {
-                int vStart = i;
-                int vEnd = (i + 1) % 4;
-
-                // Check if this specific side is represented in the 'marked' vector
-                bool foundStart = marked.Contains(vStart);
-                bool foundEnd = marked.Contains(vEnd);
-
-                if (foundStart && foundEnd)
-                {
-                    markedSide = i;
-                    break;
-                }
-            }
+            int markedSide = EdgeBasis;
 
             if (markedSide == -1) return new List<Shape> { shape }; // No valid marked boundary matching corners found
 

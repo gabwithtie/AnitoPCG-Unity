@@ -14,8 +14,15 @@ namespace Gbe.ShapeGrammar
     [Serializable]
     public abstract class IStep
     {
-        // [SerializeReference] allows Unity to natively serialize polymorphic graph edges
-        [SerializeReference] public List<IStep> before = new List<IStep>();
+        public bool isMasterNode = false;
+
+        // Persistence & UI Layout Metadata
+        public string guid = Guid.NewGuid().ToString();
+        public Vector2 uiPosition;
+        public List<string> beforeGuids = new List<string>();
+
+        // Execution Edges
+        [NonSerialized] public List<IStep> before = new List<IStep>();
 
         public bool forEach = false;
         public bool flattenInputs = false;
@@ -23,7 +30,7 @@ namespace Gbe.ShapeGrammar
         public bool isStageCheckpoint = false;
 
         public List<StepDependency> dependencies = new List<StepDependency>();
-        public Dictionary<int, List<Shape>> branchCache = new Dictionary<int, List<Shape>>();
+        [NonSerialized] public Dictionary<int, List<Shape>> branchCache = new Dictionary<int, List<Shape>>();
 
         public abstract Operation GetOperation();
     }

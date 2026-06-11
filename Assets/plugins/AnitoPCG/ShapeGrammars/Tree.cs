@@ -56,7 +56,7 @@ namespace Gbe.ShapeGrammar
         public bool isMainThreadDryRun = false;
     }
 
-    public abstract class Tree : MonoBehaviour
+    public abstract class Tree
     {
         public AsyncOperationDispatcher asyncDispatcher = new AsyncOperationDispatcher();
         public TreeParameters parameters = new TreeParameters();

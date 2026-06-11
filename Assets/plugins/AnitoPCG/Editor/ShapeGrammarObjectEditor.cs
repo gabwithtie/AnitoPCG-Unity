@@ -4,16 +4,16 @@ using System.Collections.Generic;
 
 namespace Gbe.ShapeGrammar
 {
-    [CustomEditor(typeof(ShapeGrammarPath))]
-    public class ShapeGrammarPathEditor : Editor
+    [CustomEditor(typeof(ShapeGrammarObject))]
+    public class ShapeGrammarObjectEditor : UnityEditor.Editor
     {
-        private ShapeGrammarPath pathComponent;
+        private ShapeGrammarObject pathComponent;
         private int selectedVertexIndex = -1;
         private Tool lastActiveTool = Tool.Move;
 
         private void OnEnable()
         {
-            pathComponent = (ShapeGrammarPath)target;
+            pathComponent = (ShapeGrammarObject)target;
             selectedVertexIndex = -1;
 
             lastActiveTool = Tools.current;
@@ -163,18 +163,23 @@ namespace Gbe.ShapeGrammar
             Handles.color = UnityEngine.Color.cyan;
             foreach (var tri in pathComponent.generatedTriangles)
             {
-                if (tri.Vertices.Count < 3) continue;
+                UnityEngine.Vector3 first = new UnityEngine.Vector3(tri.Vertices[0].X, tri.Vertices[0].Y, tri.Vertices[0].Z);
+                UnityEngine.Vector3 v1 = new Vector3();
+                List <UnityEngine.Vector3> vs = new List<UnityEngine.Vector3>();
+                vs.Add(first);
 
-                UnityEngine.Vector3 v0 = new UnityEngine.Vector3(tri.Vertices[0].X, tri.Vertices[0].Y, tri.Vertices[0].Z);
-                UnityEngine.Vector3 v1 = new UnityEngine.Vector3(tri.Vertices[1].X, tri.Vertices[1].Y, tri.Vertices[1].Z);
-                UnityEngine.Vector3 v2 = new UnityEngine.Vector3(tri.Vertices[2].X, tri.Vertices[2].Y, tri.Vertices[2].Z);
-
-                Handles.DrawLine(v0, v1, 1.0f);
-                Handles.DrawLine(v1, v2, 1.0f);
-                Handles.DrawLine(v2, v0, 1.0f);
+                for (int i = 1; i < tri.Vertices.Count; i++)
+                {
+                    UnityEngine.Vector3 v0 = new UnityEngine.Vector3(tri.Vertices[i - 1].X, tri.Vertices[i - 1].Y, tri.Vertices[i - 1].Z);
+                    v1 = new UnityEngine.Vector3(tri.Vertices[i].X, tri.Vertices[i].Y, tri.Vertices[i].Z);
+                    Handles.DrawLine(v0, v1, 1.0f);
+                    vs.Add(v1);
+                }
+                
+                Handles.DrawLine(v1, first, 1.0f);
 
                 Handles.color = new UnityEngine.Color(0, 1, 1, 0.04f);
-                Handles.DrawAAConvexPolygon(v0, v1, v2);
+                Handles.DrawAAConvexPolygon(vs.ToArray());
                 Handles.color = UnityEngine.Color.cyan;
             }
         }
