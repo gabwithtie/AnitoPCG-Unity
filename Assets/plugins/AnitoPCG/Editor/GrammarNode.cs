@@ -50,6 +50,20 @@ namespace Gbe.ShapeGrammar.Editor
                 GenerateDynamicParameterUI();
             }
 
+            // Inside GrammarNode.cs constructor:
+            // Draw a distinct value out port for any available computed metrics
+            if (RuntimeStep.GetOperation() != null)
+            {
+                foreach (var key in RuntimeStep.GetOperation().ComputedOutputs.Keys)
+                {
+                    Port valueOutPort = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(float));
+                    valueOutPort.portName = key;
+                    // Style it a distinct color (like Yellow) so users don't mix it up with Shape geometry wires
+                    valueOutPort.portColor = Color.yellow;
+                    outputContainer.Add(valueOutPort);
+                }
+            }
+
             RefreshPorts();
             RefreshExpandedState();
         }

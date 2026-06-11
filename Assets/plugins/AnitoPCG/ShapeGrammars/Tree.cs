@@ -121,30 +121,6 @@ namespace Gbe.ShapeGrammar
                 upstreamBranches.Add(flatStream);
             }
 
-            // 3. Sync Global Parameters
-            var operationalParams = step.GetOperation().parameters;
-            foreach (var param in paramsPack.parametersCaptured.parameters)
-            {
-                operationalParams[param.Value.id] = param.Value;
-            }
-
-            // 4. Parameter Cache Invalidation
-            bool paramsDirty = false;
-            foreach (var kvp in operationalParams)
-            {
-                if (kvp.Value != null && kvp.Value.isDirty)
-                {
-                    paramsDirty = true;
-                    break;
-                }
-            }
-            if (paramsDirty)
-            {
-                step.branchCache.Clear();
-            }
-
-            step.GetOperation().currentParams = paramsPack;
-
             List<List<Shape>> finalOutputBranches = new List<List<Shape>>();
             foreach (List<Shape> branchInput in upstreamBranches)
             {

@@ -1,4 +1,5 @@
 using Gbe.ShapeGrammar;
+using System;
 using System.Collections.Generic;
 
 public class RuntimeGraphTree : Tree
@@ -24,6 +25,29 @@ public class RuntimeGraphTree : Tree
                 if (stepLookup.TryGetValue(parentGuid, out IStep parentStep))
                 {
                     step.before.Add(parentStep);
+                }
+            }
+
+            // 1. RESOLVE DRIVEN PROPERTIES (Reflection Injection)
+            foreach (var binding in step.valueBindings)
+            {
+                // Locate the upstream step matching the GUID
+                if (!stepLookup.TryGetValue(binding.sourceStepGuid, out IStep upstreamStep))
+                {
+                    continue;
+                }
+
+                Operation upstreamOp = upstreamStep.GetOperation();
+                if (upstreamOp != null && upstreamOp.ComputedOutputs.TryGetValue(binding.outputVariableName, out float computedValue))
+                {
+                    // Use C# Reflection to inject the value straight into the target property
+                    var targetProp = step.GetOperation().GetType().GetProperty(binding.targetPropertyName);
+                    if (targetProp != null && targetProp.CanWrite)
+                    {
+                        // Safely convert types (e.g., float to int if target is an Integer)
+                        object convertedValue = Convert.ChangeType(computedValue, targetProp.PropertyType);
+                        targetProp.SetValue(step.GetOperation(), convertedValue);
+                    }
                 }
             }
         }

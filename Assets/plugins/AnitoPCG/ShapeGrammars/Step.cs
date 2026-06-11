@@ -5,6 +5,14 @@ using UnityEngine;
 namespace Gbe.ShapeGrammar
 {
     [Serializable]
+    public class PropertyBinding
+    {
+        public string sourceStepGuid;      // Which upstream node computed the value
+        public string outputVariableName;  // e.g., "FinalSegmentCount"
+        public string targetPropertyName;  // e.g., "MaxDistance" or "ShiftIndexCount"
+    }
+
+    [Serializable]
     public struct StepDependency
     {
         public string dependencyType;
@@ -29,6 +37,7 @@ namespace Gbe.ShapeGrammar
         public bool isVolatile = false;
         public bool isStageCheckpoint = false;
 
+        public List<PropertyBinding> valueBindings = new List<PropertyBinding>();
         public List<StepDependency> dependencies = new List<StepDependency>();
         [NonSerialized] public Dictionary<int, List<Shape>> branchCache = new Dictionary<int, List<Shape>>();
 

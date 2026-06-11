@@ -3,10 +3,14 @@ using System.Collections.Generic;
 
 namespace Gbe.ShapeGrammar
 {
+    [Serializable]
     public abstract class Operation
     {
-        public Dictionary<string, IParameter> parameters = new Dictionary<string, IParameter>();
-        public ApplyParams currentParams;
+        public Dictionary<string, float> ComputedOutputs { get; } = new Dictionary<string, float>();
+        public virtual List<string> GetOutputRegistry()
+        {
+            return new List<string>();
+        }
 
         protected void Fail()
         {

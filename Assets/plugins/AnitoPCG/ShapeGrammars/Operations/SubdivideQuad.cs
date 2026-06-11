@@ -10,6 +10,16 @@ namespace Gbe.ShapeGrammar
         public int EdgeBasis { get; set; } = 0;
         public int FinalSegmentCount { get; private set; } = 0;
 
+        // --- NEW: USER-SETTABLE DATA KEY FOR INDEX TRACKING ---
+        public string IdToStoreIndex { get; set; } = "sub_i";
+
+        public override List<string> GetOutputRegistry()
+        {
+            return new List<string>(){
+                "FinalSegmentCount"
+            };
+        }
+
         public override List<Shape> Apply(Shape shape)
         {
             // This operation specifically expects a Quad (4 vertices)
@@ -60,10 +70,18 @@ namespace Gbe.ShapeGrammar
                 // Update edge index flags for downstream cascade operations
                 subQuad.Data["edge"] = new List<int> { 2, 3 };
 
+                // --- NEW: ASSIGN PROCEDURAL SEQUENTIAL INDEX DATA ---
+                // Stores the specific zero-indexed value under the user's string label
+                if (!string.IsNullOrEmpty(IdToStoreIndex))
+                {
+                    subQuad.SetDataSingle(IdToStoreIndex, i);
+                }
+
                 quads.Add(subQuad);
             }
 
             FinalSegmentCount = numSegments;
+            ComputedOutputs["FinalSegmentCount"] = numSegments; // Publish to data channel
             return quads;
         }
     }
