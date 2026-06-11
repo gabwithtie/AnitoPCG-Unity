@@ -4,6 +4,7 @@ using System.Numerics;
 
 namespace Gbe.ShapeGrammar
 {
+    [Serializable]
     public class ExtrudeEdges : Operation
     {
         public float Height { get; set; } = 3.0f;

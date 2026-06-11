@@ -4,6 +4,7 @@ using System.Numerics;
 
 namespace Gbe.ShapeGrammar
 {
+    [Serializable]
     public class RepeatAlongPath : Operation
     {
         public Vector3 StartPos { get; set; } = Vector3.Zero;

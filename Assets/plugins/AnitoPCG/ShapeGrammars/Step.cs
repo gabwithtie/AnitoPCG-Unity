@@ -44,6 +44,7 @@ namespace Gbe.ShapeGrammar
         public abstract Operation GetOperation();
     }
 
+    [Serializable]
     public class Step<T> : IStep where T : Operation, new()
     {
         public T operation = new T();

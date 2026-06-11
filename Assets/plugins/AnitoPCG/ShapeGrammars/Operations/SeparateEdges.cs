@@ -4,6 +4,7 @@ using System.Numerics;
 
 namespace Gbe.ShapeGrammar
 {
+    [Serializable]
     public class SeparateEdges : Operation
     {
         public override List<Shape> Apply(Shape shape)

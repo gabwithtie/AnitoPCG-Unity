@@ -4,6 +4,7 @@ using System.Numerics;
 
 namespace Gbe.ShapeGrammar
 {
+    [Serializable]
     public class SubdivideQuad : Operation
     {
         public float MaxWidth { get; set; } = 1.0f;

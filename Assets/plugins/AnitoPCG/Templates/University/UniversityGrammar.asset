@@ -13,18 +13,22 @@ MonoBehaviour:
   m_Name: UniversityGrammar
   m_EditorClassIdentifier: Assembly-CSharp-firstpass::Gbe.ShapeGrammar.GrammarGraphAsset
   serializedSteps:
-  - rid: 1483956124541780039
-  - rid: 1483956124541780033
-  - rid: 1483956124541780034
-  - rid: 1483956124541780036
-  - rid: 1483956124541780027
   - rid: 1483956124541780042
-  - rid: 1483956124541780037
-  - rid: 1483956124541780035
+  - rid: 1483956124541780036
+  - rid: 1483956124541780043
+  - rid: 1483956124541780046
+  - rid: 2735675354664927295
   - rid: 1483956124541780044
   - rid: 1483956124541780045
-  - rid: 1483956124541780046
-  - rid: 1483956124541780043
+  - rid: 1483956124541780034
+  - rid: 1483956124541780035
+  - rid: 2735675354664927297
+  - rid: 2735675354664927298
+  - rid: 2735675354664927296
+  - rid: 2735675354664927299
+  - rid: 1483956124541780033
+  - rid: 1483956124541780039
+  - rid: 1483956124541780027
   references:
     version: 2
     RefIds:
@@ -33,10 +37,12 @@ MonoBehaviour:
       data:
         isMasterNode: 1
         guid: 0770f772-4363-4c92-934f-8333db6099e1
-        uiPosition: {x: 1507, y: 323}
+        uiPosition: {x: 1714, y: 863}
         beforeGuids:
         - 50211c5e-6513-400a-9262-1ed3aa0e5c35
         - af294ad8-70bd-44f1-a282-37facb3b7e2a
+        - 69ed91c5-04d7-442a-a28b-32f1d6bb1d5b
+        - bea00a13-df8c-44fa-aef4-90a2819aeb2c
         forEach: 0
         flattenInputs: 0
         isVolatile: 0
@@ -48,7 +54,7 @@ MonoBehaviour:
       data:
         isMasterNode: 0
         guid: 77f430a6-4a2c-413b-968f-78171b1f8a1c
-        uiPosition: {x: 217, y: 451}
+        uiPosition: {x: 1011, y: 1153}
         beforeGuids: []
         forEach: 0
         flattenInputs: 0
@@ -61,7 +67,7 @@ MonoBehaviour:
       data:
         isMasterNode: 0
         guid: 55bdc595-3272-4a27-a76e-37d8ac36b482
-        uiPosition: {x: -26, y: 239}
+        uiPosition: {x: -23, y: 186}
         beforeGuids:
         - b3112324-67ed-47f4-8c95-bc19eaa89963
         forEach: 0
@@ -75,7 +81,7 @@ MonoBehaviour:
       data:
         isMasterNode: 0
         guid: b3112324-67ed-47f4-8c95-bc19eaa89963
-        uiPosition: {x: -323, y: 239}
+        uiPosition: {x: -306, y: 186}
         beforeGuids: []
         forEach: 0
         flattenInputs: 0
@@ -97,26 +103,12 @@ MonoBehaviour:
         isStageCheckpoint: 0
         valueBindings: []
         dependencies: []
-    - rid: 1483956124541780037
-      type: {class: 'Step`1[[Gbe.ShapeGrammar.SubdivideQuad, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        isMasterNode: 0
-        guid: ca902202-8f3d-4044-acfb-196dea20a4ee
-        uiPosition: {x: 555, y: 197}
-        beforeGuids:
-        - aace4532-549c-415e-91e1-7193e4257758
-        forEach: 0
-        flattenInputs: 0
-        isVolatile: 0
-        isStageCheckpoint: 0
-        valueBindings: []
-        dependencies: []
     - rid: 1483956124541780039
       type: {class: 'Step`1[[Gbe.ShapeGrammar.RepeatAlongPath, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
       data:
         isMasterNode: 0
         guid: bea00a13-df8c-44fa-aef4-90a2819aeb2c
-        uiPosition: {x: 493, y: 451}
+        uiPosition: {x: 1319, y: 1111}
         beforeGuids:
         - 77f430a6-4a2c-413b-968f-78171b1f8a1c
         forEach: 0
@@ -132,7 +124,7 @@ MonoBehaviour:
         guid: 2c947054-0760-4be1-a431-68cf86756982
         uiPosition: {x: 850, y: 239}
         beforeGuids:
-        - ca902202-8f3d-4044-acfb-196dea20a4ee
+        - c2064985-76ab-4dfa-9fe8-27b92827e781
         forEach: 0
         flattenInputs: 0
         isVolatile: 0
@@ -189,6 +181,75 @@ MonoBehaviour:
         uiPosition: {x: 1158, y: 617}
         beforeGuids:
         - d009b439-7094-4d9f-b8a5-64b2ad9c934f
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+    - rid: 2735675354664927295
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.SubdivideQuad, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: c2064985-76ab-4dfa-9fe8-27b92827e781
+        uiPosition: {x: 562, y: 219}
+        beforeGuids:
+        - aace4532-549c-415e-91e1-7193e4257758
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+    - rid: 2735675354664927296
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.ExtrudeEdges, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: 10fb12f8-eed9-41aa-9fc4-6592183dfb1f
+        uiPosition: {x: 1019, y: 910}
+        beforeGuids:
+        - 013e8858-def9-4700-923f-cbbb87493144
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+    - rid: 2735675354664927297
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.SeparateEdges, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: 013e8858-def9-4700-923f-cbbb87493144
+        uiPosition: {x: 730, y: 863}
+        beforeGuids:
+        - 03c05d8e-3d68-44c2-832f-a96d9062aaaf
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+    - rid: 2735675354664927298
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.InsetPolygon, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: 03c05d8e-3d68-44c2-832f-a96d9062aaaf
+        uiPosition: {x: 451, y: 863}
+        beforeGuids: []
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+    - rid: 2735675354664927299
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.DataSetter, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: 69ed91c5-04d7-442a-a28b-32f1d6bb1d5b
+        uiPosition: {x: 1331, y: 940}
+        beforeGuids:
+        - 10fb12f8-eed9-41aa-9fc4-6592183dfb1f
         forEach: 0
         flattenInputs: 0
         isVolatile: 0

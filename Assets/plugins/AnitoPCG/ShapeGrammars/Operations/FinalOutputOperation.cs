@@ -1,8 +1,10 @@
 // Define this pass-through operation somewhere in your project:
+using System;
 using System.Collections.Generic;
 
 namespace Gbe.ShapeGrammar
 {
+    [Serializable]
     public class FinalOutputOperation : Operation
     {
         public override List<Shape> Apply(Shape shape)

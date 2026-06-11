@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Gbe.ShapeGrammar
 {
+    [Serializable]
     public class DataSetter : Operation
     {
         public string MetadataKey { get; set; } = "DropFirst";
