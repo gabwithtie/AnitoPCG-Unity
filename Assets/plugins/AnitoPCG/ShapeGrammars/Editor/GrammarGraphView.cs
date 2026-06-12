@@ -34,7 +34,10 @@ namespace Gbe.ShapeGrammar.Editor
             var compatiblePorts = new List<Port>();
             ports.ForEach((port) =>
             {
-                if (startPort != port && startPort.node != port.node && startPort.direction != port.direction)
+                if (startPort != port &&
+                    startPort.node != port.node &&
+                    startPort.direction != port.direction &&
+                    startPort.portType == port.portType) // <-- ENFORCE MATCHING DATA TYPES
                 {
                     compatiblePorts.Add(port);
                 }

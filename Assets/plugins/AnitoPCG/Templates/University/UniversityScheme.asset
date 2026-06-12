@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp-firstpass::Gbe.ShapeGrammar.SubstitutionSchemeAsset
   serializedSteps:
   - rid: 1483956124541780040
+  - rid: 2735675354664927301
   - rid: 1483956124541780041
   - rid: 2735675354664927300
-  - rid: 2735675354664927301
   references:
     version: 2
     RefIds:
@@ -41,7 +41,7 @@ MonoBehaviour:
         prefabVector:
         - {fileID: 8765964144329729546, guid: bf9dd7519bf869d488cc77f76835e746, type: 3}
         - {fileID: 3181777446895686972, guid: 8b5908873e05bde4698f9b6c859ea42a, type: 3}
-        - {fileID: 919132149155446097, guid: a53be9b2c3e70e64390b59a4c84ef153, type: 3}
+        - {fileID: 6239512234054734003, guid: 3667b641acef5d340a048ed24656f9ac, type: 3}
         fallbackPrefab: {fileID: 5464810357223943118, guid: fb8d5d1e76340ea47a3db39046637d3d, type: 3}
         clampIndexOutOfBounds: 1
     - rid: 2735675354664927300

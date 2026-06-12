@@ -13,130 +13,105 @@ MonoBehaviour:
   m_Name: UniversityGrammar
   m_EditorClassIdentifier: Assembly-CSharp-firstpass::Gbe.ShapeGrammar.GrammarGraphAsset
   serializedSteps:
-  - rid: 1483956124541780042
-  - rid: 1483956124541780036
-  - rid: 1483956124541780043
-  - rid: 1483956124541780046
-  - rid: 2735675354664927295
-  - rid: 1483956124541780044
-  - rid: 1483956124541780045
-  - rid: 1483956124541780034
-  - rid: 1483956124541780035
-  - rid: 2735675354664927297
-  - rid: 2735675354664927298
-  - rid: 2735675354664927296
-  - rid: 2735675354664927299
-  - rid: 1483956124541780033
-  - rid: 1483956124541780039
-  - rid: 1483956124541780027
+  - rid: 2735675358355914826
+  - rid: 2735675358355914827
+  - rid: 2735675358355914829
+  - rid: 2735675358355914830
+  - rid: 2735675358355914831
+  - rid: 2735675358355914832
+  - rid: 2735675358355914833
+  - rid: 2735675358355914835
+  - rid: 2735675358355914836
+  - rid: 2735675358355914837
+  - rid: 2735675358355914838
+  - rid: 2735675358355914841
+  - rid: 2735675358355914840
+  - rid: 2735675358355914839
+  - rid: 2735675358355914834
+  - rid: 2735675358355914828
+  - rid: 2735675358355914825
+  serializedEdges:
+  - sourceNodeGuid: b3112324-67ed-47f4-8c95-bc19eaa89963
+    sourcePortName: Out
+    targetNodeGuid: 55bdc595-3272-4a27-a76e-37d8ac36b482
+    targetPortName: In
+  - sourceNodeGuid: a8c5aa61-019c-43c1-81bf-def33a194241
+    sourcePortName: Result
+    targetNodeGuid: 55bdc595-3272-4a27-a76e-37d8ac36b482
+    targetPortName: Height
+  - sourceNodeGuid: 55bdc595-3272-4a27-a76e-37d8ac36b482
+    sourcePortName: Out
+    targetNodeGuid: aace4532-549c-415e-91e1-7193e4257758
+    targetPortName: In
+  - sourceNodeGuid: aace4532-549c-415e-91e1-7193e4257758
+    sourcePortName: Out
+    targetNodeGuid: c2064985-76ab-4dfa-9fe8-27b92827e781
+    targetPortName: In
+  - sourceNodeGuid: c2064985-76ab-4dfa-9fe8-27b92827e781
+    sourcePortName: Out
+    targetNodeGuid: 2c947054-0760-4be1-a431-68cf86756982
+    targetPortName: In
+  - sourceNodeGuid: 2c947054-0760-4be1-a431-68cf86756982
+    sourcePortName: Out
+    targetNodeGuid: 9241ee09-1e55-459b-9f57-8ead3f19d25a
+    targetPortName: In
+  - sourceNodeGuid: 9241ee09-1e55-459b-9f57-8ead3f19d25a
+    sourcePortName: Out
+    targetNodeGuid: 50211c5e-6513-400a-9262-1ed3aa0e5c35
+    targetPortName: In
+  - sourceNodeGuid: 2c947054-0760-4be1-a431-68cf86756982
+    sourcePortName: Out
+    targetNodeGuid: d009b439-7094-4d9f-b8a5-64b2ad9c934f
+    targetPortName: In
+  - sourceNodeGuid: d009b439-7094-4d9f-b8a5-64b2ad9c934f
+    sourcePortName: Out
+    targetNodeGuid: af294ad8-70bd-44f1-a282-37facb3b7e2a
+    targetPortName: In
+  - sourceNodeGuid: af294ad8-70bd-44f1-a282-37facb3b7e2a
+    sourcePortName: Out
+    targetNodeGuid: 0770f772-4363-4c92-934f-8333db6099e1
+    targetPortName: In
+  - sourceNodeGuid: 03c05d8e-3d68-44c2-832f-a96d9062aaaf
+    sourcePortName: Out
+    targetNodeGuid: 013e8858-def9-4700-923f-cbbb87493144
+    targetPortName: In
+  - sourceNodeGuid: 013e8858-def9-4700-923f-cbbb87493144
+    sourcePortName: Out
+    targetNodeGuid: 10fb12f8-eed9-41aa-9fc4-6592183dfb1f
+    targetPortName: In
+  - sourceNodeGuid: 10fb12f8-eed9-41aa-9fc4-6592183dfb1f
+    sourcePortName: Out
+    targetNodeGuid: 69ed91c5-04d7-442a-a28b-32f1d6bb1d5b
+    targetPortName: In
+  - sourceNodeGuid: 69ed91c5-04d7-442a-a28b-32f1d6bb1d5b
+    sourcePortName: Out
+    targetNodeGuid: 0770f772-4363-4c92-934f-8333db6099e1
+    targetPortName: In
+  - sourceNodeGuid: bea00a13-df8c-44fa-aef4-90a2819aeb2c
+    sourcePortName: Out
+    targetNodeGuid: 0770f772-4363-4c92-934f-8333db6099e1
+    targetPortName: In
+  - sourceNodeGuid: 77f430a6-4a2c-413b-968f-78171b1f8a1c
+    sourcePortName: Out
+    targetNodeGuid: bea00a13-df8c-44fa-aef4-90a2819aeb2c
+    targetPortName: In
+  - sourceNodeGuid: 50211c5e-6513-400a-9262-1ed3aa0e5c35
+    sourcePortName: Out
+    targetNodeGuid: 0770f772-4363-4c92-934f-8333db6099e1
+    targetPortName: In
+  - sourceNodeGuid: a8c5aa61-019c-43c1-81bf-def33a194241
+    sourcePortName: Flow Out
+    targetNodeGuid: 55bdc595-3272-4a27-a76e-37d8ac36b482
+    targetPortName: In
   references:
     version: 2
     RefIds:
-    - rid: 1483956124541780027
-      type: {class: 'Step`1[[Gbe.ShapeGrammar.FinalOutputOperation, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        isMasterNode: 1
-        guid: 0770f772-4363-4c92-934f-8333db6099e1
-        uiPosition: {x: 1714, y: 863}
-        beforeGuids:
-        - 50211c5e-6513-400a-9262-1ed3aa0e5c35
-        - af294ad8-70bd-44f1-a282-37facb3b7e2a
-        - 69ed91c5-04d7-442a-a28b-32f1d6bb1d5b
-        - bea00a13-df8c-44fa-aef4-90a2819aeb2c
-        forEach: 0
-        flattenInputs: 0
-        isVolatile: 0
-        isStageCheckpoint: 0
-        valueBindings: []
-        dependencies: []
-    - rid: 1483956124541780033
-      type: {class: 'Step`1[[Gbe.ShapeGrammar.Triangulate, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        isMasterNode: 0
-        guid: 77f430a6-4a2c-413b-968f-78171b1f8a1c
-        uiPosition: {x: 1011, y: 1153}
-        beforeGuids: []
-        forEach: 0
-        flattenInputs: 0
-        isVolatile: 0
-        isStageCheckpoint: 0
-        valueBindings: []
-        dependencies: []
-    - rid: 1483956124541780034
-      type: {class: 'Step`1[[Gbe.ShapeGrammar.ExtrudeEdges, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        isMasterNode: 0
-        guid: 55bdc595-3272-4a27-a76e-37d8ac36b482
-        uiPosition: {x: -23, y: 186}
-        beforeGuids:
-        - b3112324-67ed-47f4-8c95-bc19eaa89963
-        forEach: 0
-        flattenInputs: 0
-        isVolatile: 0
-        isStageCheckpoint: 0
-        valueBindings: []
-        dependencies: []
-    - rid: 1483956124541780035
-      type: {class: 'Step`1[[Gbe.ShapeGrammar.SeparateEdges, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        isMasterNode: 0
-        guid: b3112324-67ed-47f4-8c95-bc19eaa89963
-        uiPosition: {x: -306, y: 186}
-        beforeGuids: []
-        forEach: 0
-        flattenInputs: 0
-        isVolatile: 0
-        isStageCheckpoint: 0
-        valueBindings: []
-        dependencies: []
-    - rid: 1483956124541780036
-      type: {class: 'Step`1[[Gbe.ShapeGrammar.SubdivideQuad, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        isMasterNode: 0
-        guid: aace4532-549c-415e-91e1-7193e4257758
-        uiPosition: {x: 286, y: 197}
-        beforeGuids:
-        - 55bdc595-3272-4a27-a76e-37d8ac36b482
-        forEach: 0
-        flattenInputs: 0
-        isVolatile: 0
-        isStageCheckpoint: 0
-        valueBindings: []
-        dependencies: []
-    - rid: 1483956124541780039
-      type: {class: 'Step`1[[Gbe.ShapeGrammar.RepeatAlongPath, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        isMasterNode: 0
-        guid: bea00a13-df8c-44fa-aef4-90a2819aeb2c
-        uiPosition: {x: 1319, y: 1111}
-        beforeGuids:
-        - 77f430a6-4a2c-413b-968f-78171b1f8a1c
-        forEach: 0
-        flattenInputs: 0
-        isVolatile: 0
-        isStageCheckpoint: 0
-        valueBindings: []
-        dependencies: []
-    - rid: 1483956124541780042
-      type: {class: 'Step`1[[Gbe.ShapeGrammar.ReIndex, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        isMasterNode: 0
-        guid: 2c947054-0760-4be1-a431-68cf86756982
-        uiPosition: {x: 850, y: 239}
-        beforeGuids:
-        - c2064985-76ab-4dfa-9fe8-27b92827e781
-        forEach: 0
-        flattenInputs: 0
-        isVolatile: 0
-        isStageCheckpoint: 0
-        valueBindings: []
-        dependencies: []
-    - rid: 1483956124541780043
+    - rid: 2735675358355914825
       type: {class: 'Step`1[[Gbe.ShapeGrammar.DataSetter, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
       data:
         isMasterNode: 0
         guid: 50211c5e-6513-400a-9262-1ed3aa0e5c35
-        uiPosition: {x: 1158, y: 325}
+        uiPosition: {x: 1158, y: 333}
         beforeGuids:
         - 9241ee09-1e55-459b-9f57-8ead3f19d25a
         forEach: 0
@@ -145,49 +120,16 @@ MonoBehaviour:
         isStageCheckpoint: 0
         valueBindings: []
         dependencies: []
-    - rid: 1483956124541780044
-      type: {class: 'Step`1[[Gbe.ShapeGrammar.DataFilter, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        isMasterNode: 0
-        guid: 9241ee09-1e55-459b-9f57-8ead3f19d25a
-        uiPosition: {x: 1158, y: 177}
-        beforeGuids:
-        - 2c947054-0760-4be1-a431-68cf86756982
-        forEach: 0
-        flattenInputs: 0
-        isVolatile: 0
-        isStageCheckpoint: 0
-        valueBindings: []
-        dependencies: []
-    - rid: 1483956124541780045
-      type: {class: 'Step`1[[Gbe.ShapeGrammar.DataFilter, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        isMasterNode: 0
-        guid: d009b439-7094-4d9f-b8a5-64b2ad9c934f
-        uiPosition: {x: 1158, y: 473}
-        beforeGuids:
-        - 2c947054-0760-4be1-a431-68cf86756982
-        forEach: 0
-        flattenInputs: 0
-        isVolatile: 0
-        isStageCheckpoint: 0
-        valueBindings: []
-        dependencies: []
-    - rid: 1483956124541780046
-      type: {class: 'Step`1[[Gbe.ShapeGrammar.DataSetter, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        isMasterNode: 0
-        guid: af294ad8-70bd-44f1-a282-37facb3b7e2a
-        uiPosition: {x: 1158, y: 617}
-        beforeGuids:
-        - d009b439-7094-4d9f-b8a5-64b2ad9c934f
-        forEach: 0
-        flattenInputs: 0
-        isVolatile: 0
-        isStageCheckpoint: 0
-        valueBindings: []
-        dependencies: []
-    - rid: 2735675354664927295
+        overrides:
+        - fieldName: MetadataKey
+          value_single: 0
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: floormesh
+        - fieldName: ValueToSet
+          value_single: 0
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
+    - rid: 2735675358355914826
       type: {class: 'Step`1[[Gbe.ShapeGrammar.SubdivideQuad, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
       data:
         isMasterNode: 0
@@ -201,12 +143,77 @@ MonoBehaviour:
         isStageCheckpoint: 0
         valueBindings: []
         dependencies: []
-    - rid: 2735675354664927296
+        overrides:
+        - fieldName: IdToStoreIndex
+          value_single: 0
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: sub_y
+    - rid: 2735675358355914827
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.SeparateEdges, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: b3112324-67ed-47f4-8c95-bc19eaa89963
+        uiPosition: {x: -306, y: 186}
+        beforeGuids: []
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+        overrides: []
+    - rid: 2735675358355914828
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.RepeatAlongPath, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: bea00a13-df8c-44fa-aef4-90a2819aeb2c
+        uiPosition: {x: 1319, y: 1111}
+        beforeGuids:
+        - 77f430a6-4a2c-413b-968f-78171b1f8a1c
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+        overrides:
+        - fieldName: MaxDistance
+          value_single: 3
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
+        - fieldName: EndPos
+          value_single: 0
+          value_3: {x: 0, y: 3, z: 0}
+          value_string: 
+    - rid: 2735675358355914829
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.SubdivideQuad, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: aace4532-549c-415e-91e1-7193e4257758
+        uiPosition: {x: 286, y: 197}
+        beforeGuids:
+        - 55bdc595-3272-4a27-a76e-37d8ac36b482
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+        overrides:
+        - fieldName: IdToStoreIndex
+          value_single: 0
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: sub_x
+        - fieldName: MaxWidth
+          value_single: 0.8
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
+    - rid: 2735675358355914830
       type: {class: 'Step`1[[Gbe.ShapeGrammar.ExtrudeEdges, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
       data:
         isMasterNode: 0
         guid: 10fb12f8-eed9-41aa-9fc4-6592183dfb1f
-        uiPosition: {x: 1019, y: 910}
+        uiPosition: {x: 1029, y: 940}
         beforeGuids:
         - 013e8858-def9-4700-923f-cbbb87493144
         forEach: 0
@@ -215,12 +222,13 @@ MonoBehaviour:
         isStageCheckpoint: 0
         valueBindings: []
         dependencies: []
-    - rid: 2735675354664927297
+        overrides: []
+    - rid: 2735675358355914831
       type: {class: 'Step`1[[Gbe.ShapeGrammar.SeparateEdges, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
       data:
         isMasterNode: 0
         guid: 013e8858-def9-4700-923f-cbbb87493144
-        uiPosition: {x: 730, y: 863}
+        uiPosition: {x: 728, y: 940}
         beforeGuids:
         - 03c05d8e-3d68-44c2-832f-a96d9062aaaf
         forEach: 0
@@ -229,12 +237,13 @@ MonoBehaviour:
         isStageCheckpoint: 0
         valueBindings: []
         dependencies: []
-    - rid: 2735675354664927298
-      type: {class: 'Step`1[[Gbe.ShapeGrammar.InsetPolygon, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+        overrides: []
+    - rid: 2735675358355914832
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.Triangulate, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
       data:
         isMasterNode: 0
-        guid: 03c05d8e-3d68-44c2-832f-a96d9062aaaf
-        uiPosition: {x: 451, y: 863}
+        guid: 77f430a6-4a2c-413b-968f-78171b1f8a1c
+        uiPosition: {x: 1011, y: 1111}
         beforeGuids: []
         forEach: 0
         flattenInputs: 0
@@ -242,7 +251,12 @@ MonoBehaviour:
         isStageCheckpoint: 0
         valueBindings: []
         dependencies: []
-    - rid: 2735675354664927299
+        overrides:
+        - fieldName: SplitIntoRightTriangles
+          value_single: 1
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
+    - rid: 2735675358355914833
       type: {class: 'Step`1[[Gbe.ShapeGrammar.DataSetter, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
       data:
         isMasterNode: 0
@@ -256,3 +270,175 @@ MonoBehaviour:
         isStageCheckpoint: 0
         valueBindings: []
         dependencies: []
+        overrides:
+        - fieldName: MetadataKey
+          value_single: 0
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: innerwall
+    - rid: 2735675358355914834
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.InsetPolygon, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: 03c05d8e-3d68-44c2-832f-a96d9062aaaf
+        uiPosition: {x: 426, y: 937}
+        beforeGuids: []
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+        overrides:
+        - fieldName: InsetAmount
+          value_single: 1
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
+    - rid: 2735675358355914835
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.DataFilter, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: 9241ee09-1e55-459b-9f57-8ead3f19d25a
+        uiPosition: {x: 1158, y: 177}
+        beforeGuids:
+        - 2c947054-0760-4be1-a431-68cf86756982
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+        overrides:
+        - fieldName: MetadataKey
+          value_single: 0
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: sub_y
+        - fieldName: InvertFilter
+          value_single: 0
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
+    - rid: 2735675358355914836
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.ExtrudeEdges, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: 55bdc595-3272-4a27-a76e-37d8ac36b482
+        uiPosition: {x: -8, y: 219}
+        beforeGuids:
+        - b3112324-67ed-47f4-8c95-bc19eaa89963
+        - a8c5aa61-019c-43c1-81bf-def33a194241
+        - a8c5aa61-019c-43c1-81bf-def33a194241
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+        overrides:
+        - fieldName: Height
+          value_single: 3
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
+    - rid: 2735675358355914837
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.ReIndex, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: 2c947054-0760-4be1-a431-68cf86756982
+        uiPosition: {x: 848, y: 177}
+        beforeGuids:
+        - c2064985-76ab-4dfa-9fe8-27b92827e781
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+        overrides:
+        - fieldName: ShiftIndexCount
+          value_single: 1
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
+        - fieldName: ReverseWindingOrder
+          value_single: 1
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
+    - rid: 2735675358355914838
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.DataFilter, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: d009b439-7094-4d9f-b8a5-64b2ad9c934f
+        uiPosition: {x: 1158, y: 468}
+        beforeGuids:
+        - 2c947054-0760-4be1-a431-68cf86756982
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+        overrides:
+        - fieldName: MetadataKey
+          value_single: 0
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: sub_y
+        - fieldName: InvertFilter
+          value_single: 1
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
+        - fieldName: TargetValue
+          value_single: 0
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
+    - rid: 2735675358355914839
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.FinalOutputOperation, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 1
+        guid: 0770f772-4363-4c92-934f-8333db6099e1
+        uiPosition: {x: 1681, y: 724}
+        beforeGuids:
+        - af294ad8-70bd-44f1-a282-37facb3b7e2a
+        - 69ed91c5-04d7-442a-a28b-32f1d6bb1d5b
+        - bea00a13-df8c-44fa-aef4-90a2819aeb2c
+        - 50211c5e-6513-400a-9262-1ed3aa0e5c35
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+        overrides: []
+    - rid: 2735675358355914840
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.DataSetter, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: af294ad8-70bd-44f1-a282-37facb3b7e2a
+        uiPosition: {x: 1158, y: 631}
+        beforeGuids:
+        - d009b439-7094-4d9f-b8a5-64b2ad9c934f
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+        overrides:
+        - fieldName: MetadataKey
+          value_single: 0
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: floormesh
+    - rid: 2735675358355914841
+      type: {class: 'Step`1[[Gbe.ShapeGrammar.FloatValueNode, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
+      data:
+        isMasterNode: 0
+        guid: a8c5aa61-019c-43c1-81bf-def33a194241
+        uiPosition: {x: -343, y: 297}
+        beforeGuids: []
+        forEach: 0
+        flattenInputs: 0
+        isVolatile: 0
+        isStageCheckpoint: 0
+        valueBindings: []
+        dependencies: []
+        overrides:
+        - fieldName: Value
+          value_single: 5
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
