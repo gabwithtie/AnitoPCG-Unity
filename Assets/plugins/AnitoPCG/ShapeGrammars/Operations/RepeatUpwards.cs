@@ -5,12 +5,10 @@ using System.Numerics;
 namespace Gbe.ShapeGrammar
 {
     [Serializable]
-    public class RepeatAlongPath : Operation
+    public class RepeatUpwards : Operation
     {
-        public Vector3 StartPos { get; set; } = Vector3.Zero;
-        public Vector3 EndPos { get; set; } = Vector3.Zero;
+        public float Height { get; set; } = 3.0f;
         public float MaxDistance { get; set; } = 1.0f;
-
         public bool DropFirst { get; set; } = false;
         public bool DropLast { get; set; } = false;
         public float FinalDistancePerSegment { get; private set; } = 0f;
@@ -21,14 +19,12 @@ namespace Gbe.ShapeGrammar
         private int numSegments;
         private int numShapes;
 
-        // Custom initialization calculation setup method
-        public void SetupPath(Vector3 start, Vector3 end, float maxDist)
-        {
-            StartPos = start;
-            EndPos = end;
-            MaxDistance = maxDist;
 
-            pathVector = EndPos - StartPos;
+        public override List<Shape> Apply(Shape shape)
+        {
+            List<Shape> output = new List<Shape>();
+
+            pathVector = new Vector3(0, 1, 0) * Height;
             totalDistance = pathVector.Length(); // .Length() replaces .Magnitude() in System.Numerics
 
             // Calculate intervals intervals
@@ -36,14 +32,6 @@ namespace Gbe.ShapeGrammar
             numShapes = numSegments + 1;
 
             FinalDistancePerSegment = totalDistance / numSegments;
-        }
-
-        public override List<Shape> Apply(Shape shape)
-        {
-            List<Shape> output = new List<Shape>();
-
-            // Ensure initialization has been evaluated if properties were altered manually
-            SetupPath(StartPos, EndPos, MaxDistance);
 
             for (int i = 0; i < numShapes; ++i)
             {
@@ -53,7 +41,7 @@ namespace Gbe.ShapeGrammar
 
                 // Handle safety divide division checks if there is only 1 shape
                 float t = (numShapes > 1) ? (float)i / (numShapes - 1) : 0f;
-                Vector3 translation = StartPos + (pathVector * t);
+                Vector3 translation = Vector3.Zero + (pathVector * t);
 
                 List<Vector3> newVerts = new List<Vector3>();
                 foreach (var v in shape.Vertices)

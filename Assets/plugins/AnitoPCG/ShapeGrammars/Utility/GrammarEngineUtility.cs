@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine;
 
 namespace Gbe.ShapeGrammar
 {
@@ -26,7 +25,7 @@ namespace Gbe.ShapeGrammar
                 // 1. Locate the upstream source node that contains our data payload
                 if (!allStepsLookup.TryGetValue(binding.sourceStepGuid, out IStep sourceStep))
                 {
-                    Debug.LogWarning($"[GrammarEngine] Upstream source step {binding.sourceStepGuid} not found in execution cache.");
+                    Console.WriteLine($"[GrammarEngine] Upstream source step {binding.sourceStepGuid} not found in execution cache.");
                     continue;
                 }
 
@@ -49,7 +48,7 @@ namespace Gbe.ShapeGrammar
                     }
                     else
                     {
-                        Debug.LogWarning($"[GrammarEngine] Output variable '{binding.outputVariableName}' could not be resolved on node {sourceStep.GetType().Name}.");
+                        Console.WriteLine($"[GrammarEngine] Output variable '{binding.outputVariableName}' could not be resolved on node {sourceStep.GetType().Name}.");
                         continue;
                     }
                 }
@@ -61,7 +60,7 @@ namespace Gbe.ShapeGrammar
                 Type destinationType = targetProp != null ? targetProp.PropertyType : (targetField != null ? targetField.FieldType : null);
                 if (destinationType == null)
                 {
-                    Debug.LogWarning($"[GrammarEngine] Target field/property '{binding.targetPropertyName}' does not exist on {currentOpType.Name}.");
+                    Console.WriteLine($"[GrammarEngine] Target field/property '{binding.targetPropertyName}' does not exist on {currentOpType.Name}.");
                     continue;
                 }
 
@@ -83,7 +82,7 @@ namespace Gbe.ShapeGrammar
         private static object ConvertScalarValue(float value, Type targetType)
         {
             if (targetType == typeof(float)) return value;
-            if (targetType == typeof(int)) return (int)Mathf.Round(value);
+            if (targetType == typeof(int)) return (int)Math.Round(value);
             if (targetType == typeof(bool)) return value > 0.5f; // Threshold check mapping bit flags
             return Convert.ChangeType(value, targetType);
         }

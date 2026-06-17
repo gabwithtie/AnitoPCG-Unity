@@ -23,7 +23,7 @@ namespace Gbe.ShapeGrammar.Editor
         [OnOpenAsset]
         public static bool OnOpenAssetHandler(int instanceID, int line)
         {
-            var asset = EditorUtility.InstanceIDToObject(instanceID) as SubstitutionSchemeAsset;
+            var asset = EditorUtility.EntityIdToObject(instanceID) as SubstitutionSchemeAsset;
             if (asset != null)
             {
                 var window = GetWindow<SubstitutionEditorWindow>();

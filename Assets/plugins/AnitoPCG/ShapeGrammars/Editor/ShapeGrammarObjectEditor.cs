@@ -61,126 +61,106 @@ namespace Gbe.ShapeGrammar
 
         private void OnSceneGUI()
         {
-            if (pathComponent == null || pathComponent.inputVertices.Count == 0) return;
+            if (pathComponent == null) return;
 
-            if (Tools.current != Tool.None)
+            // =========================================================
+            // 1. DRAW AXIOM PATH / INPUT VERTICES
+            // =========================================================
+            if (pathComponent.showAxiomLines && pathComponent.inputVertices != null)
             {
-                lastActiveTool = Tools.current;
-                Tools.current = Tool.None;
-            }
-
-            Transform transform = pathComponent.transform;
-            int vertexCount = pathComponent.inputVertices.Count;
-            int insertIndex = -1;
-            UnityEngine.Vector3 insertPosition = UnityEngine.Vector3.zero;
-
-            // --- 1. Draw Path Outline & Midpoint Add Buttons ---
-            for (int i = 0; i < vertexCount; i++)
-            {
-                int nextIndex = (i + 1) % vertexCount;
-                UnityEngine.Vector3 worldPos = transform.TransformPoint(pathComponent.inputVertices[i]);
-                UnityEngine.Vector3 nextWorldPos = transform.TransformPoint(pathComponent.inputVertices[nextIndex]);
-
-                Handles.color = UnityEngine.Color.yellow;
-                Handles.DrawLine(worldPos, nextWorldPos, 2.0f);
-
-                UnityEngine.Vector3 midWorldPos = UnityEngine.Vector3.Lerp(worldPos, nextWorldPos, 0.5f);
-                float midHandleSize = HandleUtility.GetHandleSize(midWorldPos) * 0.08f;
-
-                Handles.color = UnityEngine.Color.green;
-                if (Handles.Button(midWorldPos, transform.rotation, midHandleSize, midHandleSize, Handles.RectangleHandleCap))
+                Handles.color = Color.white;
+                for (int i = 0; i < pathComponent.inputVertices.Count; i++)
                 {
-                    insertPosition = transform.InverseTransformPoint(midWorldPos);
-                    insertPosition.y = 0f;
-                    insertIndex = nextIndex;
-                }
-            }
+                    // Draw Vertex Handles
+                    Vector3 worldPos = pathComponent.transform.TransformPoint(pathComponent.inputVertices[i]);
+                    float size = HandleUtility.GetHandleSize(worldPos) * 0.1f;
 
-            if (insertIndex != -1)
-            {
-                Undo.RecordObject(pathComponent, "Insert Midpoint Vertex");
-                pathComponent.inputVertices.Insert(insertIndex, insertPosition);
-                selectedVertexIndex = insertIndex;
-                EditorUtility.SetDirty(pathComponent);
-                Repaint();
-            }
-
-            // --- 2. Draw Main Corner Vertex Buttons & Handle Context Right-Clicks ---
-            for (int i = 0; i < pathComponent.inputVertices.Count; i++)
-            {
-                UnityEngine.Vector3 worldPos = transform.TransformPoint(pathComponent.inputVertices[i]);
-                float handleSize = HandleUtility.GetHandleSize(worldPos) * 0.14f;
-
-                Handles.color = (selectedVertexIndex == i) ? UnityEngine.Color.cyan : UnityEngine.Color.white;
-
-                // Unique ID for each button control instance to track events accurately
-                int controlID = GUIUtility.GetControlID(FocusType.Passive);
-
-                if (Handles.Button(worldPos, transform.rotation, handleSize, handleSize, Handles.SphereHandleCap))
-                {
-                    selectedVertexIndex = i;
-                    Repaint();
-                }
-
-                // Intercept mouse actions to create a custom right-click context menu over vertices
-                Event currentEvent = Event.current;
-                if (currentEvent.type == EventType.MouseDown && currentEvent.button == 1) // 1 is Right Click
-                {
-                    // Check if the mouse click point intersects our vertex disc handle radius
-                    if (HandleUtility.DistanceToCircle(worldPos, handleSize) < 5f)
+                    if (Handles.Button(worldPos, Quaternion.identity, size, size, Handles.SphereHandleCap))
                     {
-                        int indexToDelete = i; // Cache index state for the contextual callback loop
-                        GenericMenu menu = new GenericMenu();
-                        menu.AddItem(new GUIContent($"Delete Vertex V{i}"), false, () => DeleteVertex(indexToDelete));
-                        menu.ShowAsContext();
-                        currentEvent.Use(); // Consume event framework loop cycle safely
+                        selectedVertexIndex = i;
+                    }
+
+                    // Draw connecting lines
+                    if (i > 0)
+                    {
+                        Vector3 prevPos = pathComponent.transform.TransformPoint(pathComponent.inputVertices[i - 1]);
+                        Handles.DrawLine(prevPos, worldPos, 2.0f);
+                    }
+                    else if (pathComponent.inputVertices.Count > 2)
+                    {
+                        // Close the polygon visually
+                        Vector3 lastPos = pathComponent.transform.TransformPoint(pathComponent.inputVertices[pathComponent.inputVertices.Count - 1]);
+                        Handles.DrawLine(lastPos, worldPos, 2.0f);
                     }
                 }
 
-                Handles.Label(worldPos + transform.up * (handleSize * 1.2f), $"V{i}", EditorStyles.miniLabel);
-            }
-
-            // --- 3. Render Position Gizmo ONLY for Selected Individual Vertex ---
-            if (selectedVertexIndex >= 0 && selectedVertexIndex < pathComponent.inputVertices.Count)
-            {
-                UnityEngine.Vector3 targetWorldPos = transform.TransformPoint(pathComponent.inputVertices[selectedVertexIndex]);
-
-                EditorGUI.BeginChangeCheck();
-                UnityEngine.Vector3 newWorldPos = Handles.PositionHandle(targetWorldPos, transform.rotation);
-                if (EditorGUI.EndChangeCheck())
+                // Handle vertex movement if one is selected
+                if (selectedVertexIndex >= 0 && selectedVertexIndex < pathComponent.inputVertices.Count)
                 {
-                    Undo.RecordObject(pathComponent, "Move Selected Handle");
-                    UnityEngine.Vector3 localPos = transform.InverseTransformPoint(newWorldPos);
+                    Vector3 worldPos = pathComponent.transform.TransformPoint(pathComponent.inputVertices[selectedVertexIndex]);
 
-                    pathComponent.inputVertices[selectedVertexIndex] = new UnityEngine.Vector3(localPos.x, 0, localPos.z);
-                    EditorUtility.SetDirty(pathComponent);
+                    EditorGUI.BeginChangeCheck();
+
+                    // Draw the standard movement gizmo
+                    // Draws a flat square handle that only allows dragging along the X/Z floor plane
+                    float handleSize = HandleUtility.GetHandleSize(worldPos) * 0.3f;
+                    Vector3 newWorldPos = Handles.Slider2D(
+                        worldPos,
+                        Vector3.up,       // Up normal defines the flat floor plane
+                        Vector3.right,    // Slide direction 1
+                        Vector3.forward,  // Slide direction 2
+                        handleSize,
+                        Handles.RectangleHandleCap,
+                        Vector2.zero
+                    );
+
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        Undo.RecordObject(pathComponent, "Move Path Vertex");
+
+                        // 1. Convert the newly dragged world position back to local space
+                        Vector3 newLocalPos = pathComponent.transform.InverseTransformPoint(newWorldPos);
+
+                        // 2. CONSTRAIN Y-AXIS: Overwrite the new Y with the original Y so it cannot change
+                        newLocalPos.y = pathComponent.inputVertices[selectedVertexIndex].y;
+
+                        // 3. Save the constrained position back into the array
+                        pathComponent.inputVertices[selectedVertexIndex] = newLocalPos;
+                    }
                 }
             }
 
-            // --- 4. Draw Triangles Layer ---
-            if (pathComponent.generatedTriangles == null || pathComponent.generatedTriangles.Count == 0) return;
-
-            Handles.color = UnityEngine.Color.cyan;
-            foreach (var tri in pathComponent.generatedTriangles)
+            // =========================================================
+            // 2. DRAW GENERATED SHAPE WIREFRAMES
+            // =========================================================
+            if (pathComponent.showWireframes && pathComponent.generatedTriangles != null)
             {
-                UnityEngine.Vector3 first = new UnityEngine.Vector3(tri.Vertices[0].X, tri.Vertices[0].Y, tri.Vertices[0].Z);
-                UnityEngine.Vector3 v1 = new Vector3();
-                List <UnityEngine.Vector3> vs = new List<UnityEngine.Vector3>();
-                vs.Add(first);
+                Handles.color = Color.cyan;
 
-                for (int i = 1; i < tri.Vertices.Count; i++)
+                foreach (var tri in pathComponent.generatedTriangles)
                 {
-                    UnityEngine.Vector3 v0 = new UnityEngine.Vector3(tri.Vertices[i - 1].X, tri.Vertices[i - 1].Y, tri.Vertices[i - 1].Z);
-                    v1 = new UnityEngine.Vector3(tri.Vertices[i].X, tri.Vertices[i].Y, tri.Vertices[i].Z);
-                    Handles.DrawLine(v0, v1, 1.0f);
-                    vs.Add(v1);
-                }
-                
-                Handles.DrawLine(v1, first, 1.0f);
+                    if (tri == null || tri.Vertices == null || tri.Vertices.Count < 3) continue;
 
-                Handles.color = new UnityEngine.Color(0, 1, 1, 0.04f);
-                Handles.DrawAAConvexPolygon(vs.ToArray());
-                Handles.color = UnityEngine.Color.cyan;
+                    List<UnityEngine.Vector3> vs = new List<UnityEngine.Vector3>();
+                    UnityEngine.Vector3 first = new UnityEngine.Vector3(tri.Vertices[0].X, tri.Vertices[0].Y, tri.Vertices[0].Z);
+                    vs.Add(first);
+
+                    UnityEngine.Vector3 v1 = first;
+                    for (int i = 1; i < tri.Vertices.Count; i++)
+                    {
+                        UnityEngine.Vector3 v0 = new UnityEngine.Vector3(tri.Vertices[i - 1].X, tri.Vertices[i - 1].Y, tri.Vertices[i - 1].Z);
+                        v1 = new UnityEngine.Vector3(tri.Vertices[i].X, tri.Vertices[i].Y, tri.Vertices[i].Z);
+                        Handles.DrawLine(v0, v1, 1.0f);
+                        vs.Add(v1);
+                    }
+
+                    Handles.DrawLine(v1, first, 1.0f);
+
+                    // Optional transparent fill overlay
+                    Handles.color = new UnityEngine.Color(0, 1, 1, 0.04f);
+                    Handles.DrawAAConvexPolygon(vs.ToArray());
+                    Handles.color = UnityEngine.Color.cyan; // reset
+                }
             }
         }
 

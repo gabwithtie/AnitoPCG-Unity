@@ -12,11 +12,10 @@ namespace Gbe.ShapeGrammar.Editor
         private GrammarGraphView _graphView;
         private GrammarGraphAsset _targetAsset;
 
-        [MenuItem("Tools/Shape Grammar Editor")]
-        public static void OpenWindow()
+        public static void RecordPreUserEdit()
         {
-            var window = GetWindow<GrammarEditorWindow>();
-            window.titleContent = new GUIContent("Grammar Graph");
+            var _targetAsset = EditorWindow.GetWindow<GrammarEditorWindow>()._targetAsset;
+            Undo.RecordObject(_targetAsset, "User Change");
         }
 
         // This intercepts whenever any asset inside your Project window is double-clicked
@@ -37,12 +36,90 @@ namespace Gbe.ShapeGrammar.Editor
 
         private void OnEnable()
         {
+            void ConstructGraphView()
+            {
+                GraphViewChange OnGraphChange(GraphViewChange change)
+                {
+                    if (change.edgesToCreate != null)
+                    {
+                        foreach (var edge in change.edgesToCreate)
+                        {
+                            if (edge.input.node is GrammarNode node)
+                                EditorApplication.delayCall += () => node.RefreshFieldStates(); // Delay ensures 'connected' state registers
+                        }
+                    }
+                    if (change.elementsToRemove != null)
+                    {
+                        foreach (var element in change.elementsToRemove)
+                        {
+                            if (element is Edge edge && edge.input.node is GrammarNode node)
+                                EditorApplication.delayCall += () => node.RefreshFieldStates();
+                        }
+                    }
+                    return change;
+                }
+
+                _graphView = new GrammarGraphView
+                {
+                    name = "Grammar Graph"
+                };
+                _graphView.StretchToParentSize();
+                _graphView.graphViewChanged -= OnGraphChange;
+                _graphView.graphViewChanged += OnGraphChange;
+                rootVisualElement.Add(_graphView);
+            }
+
+            void GenerateToolbar()
+            {
+                var toolbar = new IMGUIContainer(() =>
+                {
+                    GUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+                    GUILayout.Space(10);
+                    GUILayout.Label(_targetAsset != null ? $"Editing: {_targetAsset.name}" : "No Asset Loaded (Double-click a GrammarGraphAsset to edit)");
+
+                    GUILayout.FlexibleSpace();
+                    GUILayout.EndHorizontal();
+                });
+
+                rootVisualElement.Add(toolbar);
+            }
+
             ConstructGraphView();
             GenerateToolbar();
+
+            void OnKeyDown(KeyDownEvent evt)
+            {
+                if (evt.ctrlKey && evt.keyCode == KeyCode.S)
+                {
+                    SaveChangesToAsset(becauseOfChange: false);
+                    evt.StopPropagation(); // Prevent event from bubbling
+                }
+            }
+
+            rootVisualElement.RegisterCallback<KeyDownEvent>(OnKeyDown);
 
             // Handle assembly reloads gracefully if an asset was being edited
             if (_targetAsset != null)
             {
+                LoadTargetAsset(_targetAsset);
+            }
+            else if(this != null)
+            {
+                this.Close(); // Close if nothing is being edited.
+            }
+
+            Undo.undoRedoPerformed += OnUndoRedo;
+        }
+        private void OnUndoRedo()
+        {
+            // 1. If the asset was changed, we need to force a full UI rebuild
+            if (_targetAsset != null)
+            {
+                // Clear the current view
+                _graphView.DeleteElements(_graphView.graphElements.ToList());
+
+                // Reload from the (now modified) asset
                 LoadTargetAsset(_targetAsset);
             }
         }
@@ -53,37 +130,8 @@ namespace Gbe.ShapeGrammar.Editor
             {
                 rootVisualElement.Remove(_graphView);
             }
-        }
 
-        private void ConstructGraphView()
-        {
-            _graphView = new GrammarGraphView
-            {
-                name = "Grammar Graph"
-            };
-            _graphView.StretchToParentSize();
-            rootVisualElement.Add(_graphView);
-        }
-
-        private void GenerateToolbar()
-        {
-            var toolbar = new IMGUIContainer(() =>
-            {
-                GUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-                if (GUILayout.Button("Save Active Graph Asset", EditorStyles.toolbarButton))
-                {
-                    SaveChangesToAsset();
-                }
-
-                GUILayout.Space(10);
-                GUILayout.Label(_targetAsset != null ? $"Editing: {_targetAsset.name}" : "No Asset Loaded (Double-click a GrammarGraphAsset to edit)");
-
-                GUILayout.FlexibleSpace();
-                GUILayout.EndHorizontal();
-            });
-
-            rootVisualElement.Add(toolbar);
+            Undo.undoRedoPerformed -= OnUndoRedo;
         }
 
         // Wipes the visual canvas and recreates node windows based on the Asset data
@@ -157,19 +205,35 @@ namespace Gbe.ShapeGrammar.Editor
                     }
                 }
             }
+
+            // Put this at the very end of LoadTargetAsset()
+            foreach (var element in _graphView.graphElements)
+            {
+                if (element is GrammarNode node)
+                {
+                    node.RefreshFieldStates();
+                }
+            }
         }
 
         // Compiles the visual node positions/links and updates the ScriptableObject database on disk
-        private void SaveChangesToAsset()
+        public static void SaveChangesToAsset(bool becauseOfChange = true)
         {
+            var _targetAsset = EditorWindow.GetWindow<GrammarEditorWindow>()._targetAsset;
+            var _graphView = EditorWindow.GetWindow<GrammarEditorWindow>()._graphView;
+
             if (_targetAsset == null) return;
 
-            // Enable CTR+Z Undo tracking compatibility
-            Undo.RecordObject(_targetAsset, "Update Grammar Graph Layout");
+            if (becauseOfChange)
+            {
+                // Enable CTR+Z Undo tracking compatibility
+                Undo.RecordObject(_targetAsset, "Update Grammar Graph Layout");
+            }
 
             _targetAsset.serializedSteps.Clear();
+            _targetAsset.serializedEdges.Clear();
 
-            // 1. Gather all active node transformations and structural states
+            // 1. Gather Nodes and Reset Connections
             foreach (var element in _graphView.graphElements)
             {
                 if (element is GrammarNode node)
@@ -177,13 +241,12 @@ namespace Gbe.ShapeGrammar.Editor
                     node.RuntimeStep.guid = node.NodeId;
                     node.RuntimeStep.uiPosition = node.GetPosition().position;
                     node.RuntimeStep.beforeGuids.Clear();
+                    node.RuntimeStep.valueBindings.Clear(); // CRITICAL: Reset data bindings!
                     _targetAsset.serializedSteps.Add(node.RuntimeStep);
                 }
             }
 
-            // 2. Gather structural wire connections across all nodes
-            _targetAsset.serializedEdges.Clear();
-
+            // 2. Gather Wires and Separate by Data Type
             foreach (var element in _graphView.graphElements)
             {
                 if (element is Edge edge)
@@ -192,10 +255,23 @@ namespace Gbe.ShapeGrammar.Editor
                     var tgt = edge.input.node as GrammarNode;
                     if (src != null && tgt != null)
                     {
-                        // Keep your topological flow ordering list
-                        tgt.RuntimeStep.beforeGuids.Add(src.NodeId);
+                        // Is this a structural execution flow link? (Bool / White wire)
+                        if (edge.output.portType == typeof(bool) && edge.input.portType == typeof(bool))
+                        {
+                            tgt.RuntimeStep.beforeGuids.Add(src.NodeId);
+                        }
+                        // Is this a Value/Math parameter link? (Float/Int / Yellow wire)
+                        else if (edge.output.portType == typeof(float) || edge.input.portType == typeof(float))
+                        {
+                            tgt.RuntimeStep.valueBindings.Add(new PropertyBinding
+                            {
+                                sourceStepGuid = src.NodeId,
+                                outputVariableName = edge.output.portName,
+                                targetPropertyName = edge.input.portName
+                            });
+                        }
 
-                        // SAVE THE PRECISE PORT ROUTING DETAILS
+                        // SAVE THE PRECISE PORT ROUTING DETAILS FOR UI REBUILDING
                         _targetAsset.serializedEdges.Add(new SerializableEdge
                         {
                             sourceNodeGuid = src.NodeId,
@@ -207,9 +283,9 @@ namespace Gbe.ShapeGrammar.Editor
                 }
             }
 
-            // Flush modifications straight to asset database serialization
             EditorUtility.SetDirty(_targetAsset);
             AssetDatabase.SaveAssets();
+
             Debug.Log($"<color=green><b>[Saved]</b></color> Successfully compiled layout states into file asset: {_targetAsset.name}");
         }
 

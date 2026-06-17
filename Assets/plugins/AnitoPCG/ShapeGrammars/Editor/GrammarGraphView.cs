@@ -2,11 +2,11 @@ using Gbe.ShapeGrammar;
 using Gbe.ShapeGrammar.Editor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
-
-using System.Linq;
 
 namespace Gbe.ShapeGrammar.Editor
 {
@@ -55,9 +55,10 @@ namespace Gbe.ShapeGrammar.Editor
             var operationTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(type => type.IsClass
-                               && !type.IsAbstract
-                               && typeof(Operation).IsAssignableFrom(type)
-                               && type.GetConstructor(Type.EmptyTypes) != null); // Ensures it has a parameterless constructor
+                    && !type.IsAbstract
+                    && typeof(Operation).IsAssignableFrom(type)
+                    && type.GetConstructor(Type.EmptyTypes) != null
+                ); // Ensures it has a parameterless constructor
 
             // 2. Loop through every discovered concrete operation type
             foreach (Type opType in operationTypes)
@@ -78,19 +79,14 @@ namespace Gbe.ShapeGrammar.Editor
 
                     // Dynamically instantiate the newly created closed generic type
                     IStep mockStep = (IStep)Activator.CreateInstance(concreteStepType);
+                    mockStep.uiPosition = graphMousePos;
 
                     // Pass the constructed step into your node drawing engine
-                    CreateNode($"{menuName} Node", mockStep, graphMousePos);
+                    GrammarEditorWindow.RecordPreUserEdit();
+                    CreateNodeWindow(mockStep);
+                    GrammarEditorWindow.SaveChangesToAsset();
                 });
             }
-        }
-
-        public GrammarNode CreateNode(string nodeName, IStep step, Vector2 position)
-        {
-            var node = new GrammarNode(nodeName, step);
-            node.SetPosition(new Rect(position, Vector2.zero));
-            AddElement(node);
-            return node;
         }
 
         public static string GetPrettyName(Type type)
@@ -104,8 +100,7 @@ namespace Gbe.ShapeGrammar.Editor
             string baseName = type.Name.Split('`')[0];
 
             // Get the friendly names of all generic arguments
-            var genericArgs = type.GetGenericArguments()
-                                  .Select(t => GetPrettyName(t));
+            var genericArgs = type.GetGenericArguments().Select(t => GetPrettyName(t));
 
             return $"{baseName}<{string.Join(", ", genericArgs)}>";
         }

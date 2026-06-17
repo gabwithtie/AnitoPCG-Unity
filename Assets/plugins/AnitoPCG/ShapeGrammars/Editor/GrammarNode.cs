@@ -92,6 +92,40 @@ namespace Gbe.ShapeGrammar.Editor
             RefreshExpandedState();
         }
 
+        public void RefreshFieldStates()
+        {
+            // Find all input ports on this node
+            var inputPorts = this.Query<Port>().ToList();
+
+            foreach (var port in inputPorts)
+            {
+                // Check if it's one of our custom yellow scalar value ports
+                if (port.direction == Direction.Input && (port.portType == typeof(float) || port.portType == typeof(int)))
+                {
+                    var customRow = port.parent;
+                    if (customRow != null)
+                    {
+                        // Find the slider/input field next to the port
+                        var fieldControl = customRow.Q<FloatField>() as VisualElement ?? customRow.Q<IntegerField>() as VisualElement;
+                        if (fieldControl != null)
+                        {
+                            bool isDriven = port.connected;
+
+                            // Disable the UI element if a wire is connected
+                            fieldControl.SetEnabled(!isDriven);
+
+                            // Highlight the label yellow to show it is currently being driven by an upstream node
+                            var label = customRow.Q<Label>();
+                            if (label != null)
+                            {
+                                label.style.color = isDriven ? Color.yellow : new StyleColor(StyleKeyword.Null);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private void GenerateDynamicParameterUI()
         {
             Operation operationalInstance = RuntimeStep.GetOperation();
