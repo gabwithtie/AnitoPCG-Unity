@@ -36,6 +36,31 @@ namespace Gbe.ShapeGrammar.Editor
             return compatiblePorts;
         }
 
+        public void RebuildFromAsset(SubstitutionSchemeAsset asset)
+        {
+            // 1. Create nodes
+            foreach (var step in asset.serializedSteps)
+            {
+                CreateNode(step);
+            }
+
+            // 2. Rebuild edges from serialized map
+            foreach (var edgeData in asset.serializedEdges)
+            {
+                var sourceNode = nodes.ToList().Cast<SubstitutionNode>().FirstOrDefault(n => n.NodeId == edgeData.sourceNodeGuid);
+                var targetNode = nodes.ToList().Cast<SubstitutionNode>().FirstOrDefault(n => n.NodeId == edgeData.targetNodeGuid);
+
+                if (sourceNode != null && targetNode != null)
+                {
+                    var outPort = sourceNode.Query<Port>(name: edgeData.sourcePortName).First();
+                    var inPort = targetNode.Query<Port>(name: edgeData.targetPortName).First();
+
+                    var edge = outPort.ConnectTo(inPort);
+                    AddElement(edge);
+                }
+            }
+        }
+
         private void PopulateContextMenu(ContextualMenuPopulateEvent evt)
         {
             Vector2 graphMousePos = contentViewContainer.WorldToLocal(evt.localMousePosition);

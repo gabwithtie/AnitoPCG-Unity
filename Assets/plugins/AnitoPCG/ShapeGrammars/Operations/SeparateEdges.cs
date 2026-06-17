@@ -7,6 +7,8 @@ namespace Gbe.ShapeGrammar
     [Serializable]
     public class SeparateEdges : Operation
     {
+        public string IndexTag { get; set; } = "e";
+
         public override List<Shape> Apply(Shape shape)
         {
             List<Shape> output = new List<Shape>();
@@ -22,12 +24,15 @@ namespace Gbe.ShapeGrammar
             {
                 Shape newShape = new Shape(new List<Vector3> { shape.Vertices[i], shape.Vertices[i - 1] });
                 newShape.Data = new Dictionary<string, List<int>>(shape.Data); // Value clone lookup dictionary
+                newShape.Data[IndexTag] = new List<int>() { i };
+                ;
                 output.Add(newShape);
             }
 
             // Tie the final loop line segment wrapping back to vertex index 0
             Shape closingShape = new Shape(new List<Vector3> { shape.Vertices[0], shape.Vertices[shape.Vertices.Count - 1] });
             closingShape.Data = new Dictionary<string, List<int>>(shape.Data);
+            closingShape.Data[IndexTag] = new List<int>() { 0 };
             output.Add(closingShape);
 
             return output;

@@ -61,6 +61,17 @@ namespace Gbe.ShapeGrammar.Editor
                 }
                 outputContainer.Add(OutputPort);
 
+                // 1. Create a Toggle UI element for Flatten Inputs
+                var flattenToggle = new Toggle("Flatten Inputs");
+                flattenToggle.SetValueWithoutNotify(RuntimeStep.flattenInputs);
+                flattenToggle.RegisterValueChangedCallback(evt =>
+                {
+                    RuntimeStep.flattenInputs = evt.newValue;
+                    OnParameterChanged?.Invoke();
+                });
+
+                extensionContainer.Add(flattenToggle);
+
                 GenerateDynamicParameterUI();
             }
 

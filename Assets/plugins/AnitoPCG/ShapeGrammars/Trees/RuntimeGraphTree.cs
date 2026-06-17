@@ -103,11 +103,8 @@ namespace Gbe.ShapeGrammar
                         List<Shape> inputShapes = GatherUpstreamShapesFromGuids(step, seedList, _stepLookup);
                         List<Shape> outputShapes = new List<Shape>();
 
-                        foreach (var shape in inputShapes)
-                        {
-                            var results = op.Apply(shape);
-                            if (results != null) outputShapes.AddRange(results);
-                        }
+                        var results = op.ApplySet(inputShapes);
+                        if (results != null) outputShapes.AddRange(results);
 
                         GrammarEngineUtility.StoreDownstreamShapes(step, outputShapes);
                     }

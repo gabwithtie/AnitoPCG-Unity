@@ -49,57 +49,27 @@ namespace Gbe.ShapeGrammar.Editor
         public void LoadTargetAsset(SubstitutionSchemeAsset asset)
         {
             _targetAsset = asset;
-            if (_graphView == null || _targetAsset == null) return;
+            _graphView.Clear();
 
-            var elementsToDelete = new List<GraphElement>(_graphView.graphElements);
-            foreach (var elem in elementsToDelete) _graphView.RemoveElement(elem);
-
-            // Enforce Master Entry Node Existence
-            if (!_targetAsset.serializedSteps.Any(s => s.isMasterInput))
+            // 1. Instantiate all nodes first
+            foreach (var step in asset.serializedSteps)
             {
-                _targetAsset.serializedSteps.Add(new MasterInputStep { isMasterInput = true, uiTitle = "Master Input Stack", uiPosition = new Vector2(800, 300) });
-                EditorUtility.SetDirty(_targetAsset);
-                AssetDatabase.SaveAssets();
+                _graphView.CreateNode(step);
             }
 
-            var nodeMap = new Dictionary<string, SubstitutionNode>();
-            foreach (var step in _targetAsset.serializedSteps)
+            // 2. Rebuild edges from the serialized map
+            foreach (var edgeData in asset.serializedEdges)
             {
-                var uiNode = _graphView.CreateNode(step);
-                nodeMap[step.guid] = uiNode;
-            }
+                var src = _graphView.nodes.ToList().Cast<SubstitutionNode>().FirstOrDefault(n => n.NodeId == edgeData.sourceNodeGuid);
+                var tgt = _graphView.nodes.ToList().Cast<SubstitutionNode>().FirstOrDefault(n => n.NodeId == edgeData.targetNodeGuid);
 
-            // Draw right-to-left wiring channels
-            foreach (var step in _targetAsset.serializedSteps)
-            {
-                if (nodeMap.TryGetValue(step.guid, out var currentNode) && !string.IsNullOrEmpty(step.sourceNodeGuid))
+                if (src != null && tgt != null)
                 {
-                    if (nodeMap.TryGetValue(step.sourceNodeGuid, out var sourceNode))
-                    {
-                        // Look inside the left output ports collection container for matching target linkage
-                        Port outputPort = sourceNode.inputContainer.Children().OfType<Port>().FirstOrDefault();
+                    // Use FindPortByName to get the correct visual port
+                    var outPort = src.Query<Port>(name: edgeData.sourcePortName).First();
+                    var inPort = tgt.Query<Port>(name: edgeData.targetPortName).First();
 
-                        if (step is BooleanBranchStep || step is IndexBranchStep)
-                        {
-                            // If this node is a child target, look up which custom port ID inside the parent targeted it
-                            foreach (var parentStep in _targetAsset.serializedSteps)
-                            {
-                                if (parentStep is BooleanBranchStep b && b.trueBranchGuid == step.guid) outputPort = sourceNode.inputContainer.Children().OfType<Port>().FirstOrDefault(p => p.viewDataKey == "true");
-                                if (parentStep is BooleanBranchStep b2 && b2.falseBranchGuid == step.guid) outputPort = sourceNode.inputContainer.Children().OfType<Port>().FirstOrDefault(p => p.viewDataKey == "false");
-                                if (parentStep is IndexBranchStep idx)
-                                {
-                                    int matchIdx = idx.outputBranchGuids.IndexOf(step.guid);
-                                    if (matchIdx >= 0) outputPort = sourceNode.inputContainer.Children().OfType<Port>().FirstOrDefault(p => p.viewDataKey == $"idx_{matchIdx}");
-                                }
-                            }
-                        }
-
-                        if (outputPort != null && currentNode.InputPort != null)
-                        {
-                            var edge = outputPort.ConnectTo(currentNode.InputPort);
-                            _graphView.AddElement(edge);
-                        }
-                    }
+                    _graphView.AddElement(outPort.ConnectTo(inPort));
                 }
             }
         }
@@ -120,6 +90,26 @@ namespace Gbe.ShapeGrammar.Editor
 
             // 1. Enable standard Ctrl+Z Undo tracking compatibility
             Undo.RecordObject(_targetAsset, "Update Substitution Hierarchy Asset States");
+
+            // Inside your Save method in SubstitutionEditorWindow:
+            _targetAsset.serializedEdges.Clear();
+
+            foreach (var edge in _graphView.edges.ToList())
+            {
+                var outputNode = edge.output.node as SubstitutionNode;
+                var inputNode = edge.input.node as SubstitutionNode;
+
+                if (outputNode != null && inputNode != null)
+                {
+                    _targetAsset.serializedEdges.Add(new SubstitutionEdge
+                    {
+                        sourceNodeGuid = outputNode.NodeId,
+                        sourcePortName = edge.output.portName,
+                        targetNodeGuid = inputNode.NodeId,
+                        targetPortName = edge.input.portName
+                    });
+                }
+            }
 
             // 2. Extract a snapshot list of the runtime steps currently on the canvas
             var activeSteps = new List<ISubStep>();
@@ -188,5 +178,6 @@ namespace Gbe.ShapeGrammar.Editor
 
             Debug.Log("<color=cyan><b>[Saved]</b></color> Successfully compiled Right-To-Left Substitution Scheme configurations to disk.");
         }
+
     }
 }

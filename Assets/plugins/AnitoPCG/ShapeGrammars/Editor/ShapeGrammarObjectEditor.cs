@@ -11,10 +11,14 @@ namespace Gbe.ShapeGrammar
         private int selectedVertexIndex = -1;
         private Tool lastActiveTool = Tool.Move;
 
+        // 1. ADD THIS FLAG TO TRACK DRAGGING STATE
+        private bool isDraggingHandle = false;
+
         private void OnEnable()
         {
             pathComponent = (ShapeGrammarObject)target;
             selectedVertexIndex = -1;
+            isDraggingHandle = false;
 
             lastActiveTool = Tools.current;
             if (Tools.current != Tool.None)
@@ -41,14 +45,6 @@ namespace Gbe.ShapeGrammar
                 Tools.current = Tool.None;
             }
 
-            if (GUILayout.Button("Append Vertex to End"))
-            {
-                Undo.RecordObject(pathComponent, "Add Path Vertex");
-                pathComponent.inputVertices.Add(UnityEngine.Vector3.zero);
-                selectedVertexIndex = pathComponent.inputVertices.Count - 1;
-                SceneView.RepaintAll();
-            }
-
             EditorGUILayout.Space();
 
             if (GUILayout.Button("Regenerate Shape Grammar", GUILayout.Height(35)))
@@ -62,6 +58,15 @@ namespace Gbe.ShapeGrammar
         private void OnSceneGUI()
         {
             if (pathComponent == null) return;
+
+            // 2. DETECT HANDLE RELEASE: If no handle is active but we were dragging, it means the user just let go
+            if (GUIUtility.hotControl == 0 && isDraggingHandle)
+            {
+                isDraggingHandle = false;
+
+                // Trigger the generation!
+                pathComponent.ExecuteGrammarChain();
+            }
 
             // =========================================================
             // 1. DRAW AXIOM PATH / INPUT VERTICES
@@ -116,6 +121,8 @@ namespace Gbe.ShapeGrammar
 
                     if (EditorGUI.EndChangeCheck())
                     {
+                        isDraggingHandle = true;
+
                         Undo.RecordObject(pathComponent, "Move Path Vertex");
 
                         // 1. Convert the newly dragged world position back to local space

@@ -12,60 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c073d08f9ceb8642ba6ae1f557de6fd, type: 3}
   m_Name: UniversityScheme
   m_EditorClassIdentifier: Assembly-CSharp-firstpass::Gbe.ShapeGrammar.SubstitutionSchemeAsset
-  serializedSteps:
-  - rid: 1483956124541780040
-  - rid: 2735675354664927301
-  - rid: 1483956124541780041
-  - rid: 2735675354664927300
+  serializedSteps: []
+  serializedEdges: []
   references:
     version: 2
-    RefIds:
-    - rid: 1483956124541780040
-      type: {class: MasterInputStep, ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        guid: eb1c3f66-9fa5-436b-8b43-f0b9c20b7647
-        uiTitle: Master Input Stack
-        uiPosition: {x: 800, y: 300}
-        isMasterInput: 1
-        sourceNodeGuid: 
-        targetNodeGuid: 6294db58-95b4-45e1-8833-89be573a7c55
-    - rid: 1483956124541780041
-      type: {class: PrefabVectorMapStep, ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        guid: 29f1bd10-6820-4093-8634-5855c58ba291
-        uiTitle: Prefab Array Substituted Entity
-        uiPosition: {x: 1214, y: 262}
-        isMasterInput: 0
-        sourceNodeGuid: 6294db58-95b4-45e1-8833-89be573a7c55
-        dataKey: floormesh
-        prefabVector:
-        - {fileID: 8765964144329729546, guid: bf9dd7519bf869d488cc77f76835e746, type: 3}
-        - {fileID: 3181777446895686972, guid: 8b5908873e05bde4698f9b6c859ea42a, type: 3}
-        - {fileID: 6239512234054734003, guid: 3667b641acef5d340a048ed24656f9ac, type: 3}
-        fallbackPrefab: {fileID: 5464810357223943118, guid: fb8d5d1e76340ea47a3db39046637d3d, type: 3}
-        clampIndexOutOfBounds: 1
-    - rid: 2735675354664927300
-      type: {class: BooleanBranchStep, ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        guid: 6294db58-95b4-45e1-8833-89be573a7c55
-        uiTitle: Boolean Condition Splitter
-        uiPosition: {x: 1151.1501, y: 342.70004}
-        isMasterInput: 0
-        sourceNodeGuid: eb1c3f66-9fa5-436b-8b43-f0b9c20b7647
-        dataKey: innerwall
-        trueBranchGuid: bab09e2c-0821-46d4-8e07-d5d836e2eca1
-        falseBranchGuid: 29f1bd10-6820-4093-8634-5855c58ba291
-    - rid: 2735675354664927301
-      type: {class: PrefabVectorMapStep, ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
-      data:
-        guid: bab09e2c-0821-46d4-8e07-d5d836e2eca1
-        uiTitle: Prefab Array Substituted Entity
-        uiPosition: {x: 1385, y: 544}
-        isMasterInput: 0
-        sourceNodeGuid: 6294db58-95b4-45e1-8833-89be573a7c55
-        dataKey: innerwall
-        prefabVector:
-        - {fileID: 0}
-        - {fileID: 5464810357223943118, guid: e60701c34adc98840be021163fc9c85a, type: 3}
-        fallbackPrefab: {fileID: 5464810357223943118, guid: e60701c34adc98840be021163fc9c85a, type: 3}
-        clampIndexOutOfBounds: 1
+    RefIds: []

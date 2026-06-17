@@ -12,8 +12,10 @@ namespace Gbe.ShapeGrammar
         public Vector2 uiPosition;
         public bool isMasterInput = false;
 
-        // Connections: Right-to-Left data flow. 
-        // A node tracks the GUID of the node connected to its input side (which sits visually on its right).
+        // Change: Nodes now track the GUIDs of nodes connected to their output ports
+        public List<string> outputBranchGuids = new List<string>();
+
+        // Existing input connection
         public string sourceNodeGuid;
 
         public abstract Dictionary<string, List<Shape>> Evaluate(List<Shape> incomingShapes);

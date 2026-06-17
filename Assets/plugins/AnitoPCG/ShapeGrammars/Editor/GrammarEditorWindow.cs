@@ -104,10 +104,6 @@ namespace Gbe.ShapeGrammar.Editor
             {
                 LoadTargetAsset(_targetAsset);
             }
-            else if(this != null)
-            {
-                this.Close(); // Close if nothing is being edited.
-            }
 
             Undo.undoRedoPerformed += OnUndoRedo;
         }
