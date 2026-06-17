@@ -141,21 +141,19 @@ namespace Gbe.ShapeGrammar.Editor
                 spawnedNodes[step.guid] = nodeWindow;
             }
 
-            foreach (var step in _targetAsset.serializedSteps)
+            // Phase 2: Reconstruct exact port-to-port wire connections from asset database
+            foreach (var edgeData in _targetAsset.serializedEdges)
             {
-                if (spawnedNodes.TryGetValue(step.guid, out var targetNode))
+                if (spawnedNodes.TryGetValue(edgeData.sourceNodeGuid, out var sourceNode) &&
+                    spawnedNodes.TryGetValue(edgeData.targetNodeGuid, out var targetNode))
                 {
-                    foreach (var parentGuid in step.beforeGuids)
+                    Port outPort = FindPortByName(sourceNode, edgeData.sourcePortName, Direction.Output);
+                    Port inPort = FindPortByName(targetNode, edgeData.targetPortName, Direction.Input);
+
+                    if (outPort != null && inPort != null)
                     {
-                        if (spawnedNodes.TryGetValue(parentGuid, out var sourceNode))
-                        {
-                            // sourceNode.OutputPort can be null if someone tries linking to a master's non-existent out port
-                            if (sourceNode.OutputPort != null)
-                            {
-                                var edge = sourceNode.OutputPort.ConnectTo(targetNode.InputPort);
-                                _graphView.AddElement(edge);
-                            }
-                        }
+                        var edge = outPort.ConnectTo(inPort);
+                        _graphView.AddElement(edge);
                     }
                 }
             }
@@ -184,6 +182,8 @@ namespace Gbe.ShapeGrammar.Editor
             }
 
             // 2. Gather structural wire connections across all nodes
+            _targetAsset.serializedEdges.Clear();
+
             foreach (var element in _graphView.graphElements)
             {
                 if (element is Edge edge)
@@ -192,7 +192,17 @@ namespace Gbe.ShapeGrammar.Editor
                     var tgt = edge.input.node as GrammarNode;
                     if (src != null && tgt != null)
                     {
+                        // Keep your topological flow ordering list
                         tgt.RuntimeStep.beforeGuids.Add(src.NodeId);
+
+                        // SAVE THE PRECISE PORT ROUTING DETAILS
+                        _targetAsset.serializedEdges.Add(new SerializableEdge
+                        {
+                            sourceNodeGuid = src.NodeId,
+                            sourcePortName = edge.output.portName,
+                            targetNodeGuid = tgt.NodeId,
+                            targetPortName = edge.input.portName
+                        });
                     }
                 }
             }
@@ -201,6 +211,20 @@ namespace Gbe.ShapeGrammar.Editor
             EditorUtility.SetDirty(_targetAsset);
             AssetDatabase.SaveAssets();
             Debug.Log($"<color=green><b>[Saved]</b></color> Successfully compiled layout states into file asset: {_targetAsset.name}");
+        }
+
+        private Port FindPortByName(GrammarNode node, string portName, Direction direction)
+        {
+            // Query recursively across all input/output containers for a matching portName
+            var ports = node.Query<Port>().ToList();
+            foreach (var port in ports)
+            {
+                if (port.direction == direction && port.portName == portName)
+                {
+                    return port;
+                }
+            }
+            return null;
         }
     }
 }

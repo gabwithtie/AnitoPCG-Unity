@@ -39,7 +39,11 @@ namespace Gbe.ShapeGrammar
                 return;
             }
 
-            // Step 1: Run Geometry Generation Graph
+            // =================================================================
+            // STEP 1: RUN GEOMETRY GENERATION GRAPH (WITH VALUE BINDINGS MAPPED)
+            // =================================================================
+
+            // 1. Convert input canvas vertex vectors into world coordinate space
             List<SysVector3> sysVertices = new List<SysVector3>();
             foreach (var v in inputVertices)
             {
@@ -47,19 +51,153 @@ namespace Gbe.ShapeGrammar
                 sysVertices.Add(new SysVector3(worldPos.x, worldPos.y, worldPos.z));
             }
 
+            // Create our starting seed shape polygon
             Shape initialShape = new Shape(sysVertices);
-            SpatialDependencyRegistry mockRegistry = new SpatialDependencyRegistry();
+            List<Shape> seedList = new List<Shape> { initialShape };
 
-            tree.InitializeFromAsset(graphAsset);
-            tree.RegisterToRegistry(mockRegistry, initialShape);
-            generatedTriangles = tree.ApplySynchronous(initialShape, stage: 0);
+            // 2. Sort the serialized nodes topologically so dependencies execute in order
+            List<IStep> sortedExecutionList = SortStepsTopologically(graphAsset.serializedSteps);
 
-            // Step 2: Run Substitution Scheme Asset System Pipeline 
+            // 3. Rebuild execution lookup maps and purge stale historical branch cache states
+            Dictionary<string, IStep> allStepsLookup = new Dictionary<string, IStep>();
+            foreach (var step in sortedExecutionList)
+            {
+                if (step.branchCache != null) step.branchCache.Clear();
+                allStepsLookup[step.guid] = step;
+            }
+
+            // 4. Process each step sequentially down the sorted dependency pipeline
+            foreach (IStep step in sortedExecutionList)
+            {
+                // Skip the master visual output node; it acts as an exit collector sink
+                if (step.isMasterNode) continue;
+
+                // CRITICAL TRIGGER: Inject math results into properties right before running
+                GrammarEngineUtility.ResolveValueBindings(step, allStepsLookup);
+
+                Operation op = step.GetOperation();
+                if (op != null)
+                {
+                    // Gather geometry from upstream steps using serialized GUID wires
+                    List<Shape> inputShapes = GatherUpstreamShapesFromGuids(step, seedList, allStepsLookup);
+                    List<Shape> outputShapes = new List<Shape>();
+
+                    // Apply operational manipulations (e.g. SubdivideQuad, Triangulate, Math operators)
+                    foreach (var shape in inputShapes)
+                    {
+                        var results = op.Apply(shape);
+                        if (results != null) outputShapes.AddRange(results);
+                    }
+
+                    // Store calculation arrays into local execution caches for downstream readers
+                    GrammarEngineUtility.StoreDownstreamShapes(step, outputShapes);
+                }
+            }
+
+            // 5. Extract final reporting results to hand over to substitution steps
+            generatedTriangles = new List<Shape>();
+            if (sortedExecutionList.Count > 0)
+            {
+                // Harvest from the explicit Master/Final Output node if it exists, otherwise fall back to the tail node
+                var masterNode = sortedExecutionList.Find(s => s.isMasterNode);
+                IStep finalReportingStep = masterNode ?? sortedExecutionList[sortedExecutionList.Count - 1];
+
+                generatedTriangles = GatherUpstreamShapesFromGuids(finalReportingStep, seedList, allStepsLookup);
+            }
+
+            // =================================================================
+            // STEP 2: RUN SUBSTITUTION SCHEME ASSET SYSTEM PIPELINE 
+            // =================================================================
             if (substitutionAsset != null)
             {
                 ClearInstantiatedPrefabs();
                 ProcessSubstitutionGraph(generatedTriangles);
             }
+        }
+
+        // =================================================================
+        // PIPELINE HELPER UTILITIES
+        // =================================================================
+
+        /// <summary>
+        /// Directs graph compilation by sorting steps based on their wire connection paths (beforeGuids).
+        /// </summary>
+        private List<IStep> SortStepsTopologically(List<IStep> steps)
+        {
+            List<IStep> sorted = new List<IStep>();
+            HashSet<string> visited = new HashSet<string>();
+            HashSet<string> visiting = new HashSet<string>();
+
+            Dictionary<string, IStep> stepMap = new Dictionary<string, IStep>();
+            foreach (var s in steps)
+            {
+                if (s != null && !string.IsNullOrEmpty(s.guid))
+                    stepMap[s.guid] = s;
+            }
+
+            void Visit(IStep step)
+            {
+                if (visited.Contains(step.guid)) return;
+                if (visiting.Contains(step.guid)) return; // Prevents circular infinite loops safely
+
+                visiting.Add(step.guid);
+
+                if (step.beforeGuids != null)
+                {
+                    foreach (var beforeGuid in step.beforeGuids)
+                    {
+                        if (stepMap.TryGetValue(beforeGuid, out var prereq))
+                        {
+                            Visit(prereq);
+                        }
+                    }
+                }
+
+                visiting.Remove(step.guid);
+                visited.Add(step.guid);
+                sorted.Add(step);
+            }
+
+            foreach (var s in steps)
+            {
+                if (s != null) Visit(s);
+            }
+
+            return sorted;
+        }
+
+        /// <summary>
+        /// Inspects serialized wiring data matrices to pull shape collections out of upstream caches.
+        /// </summary>
+        private List<Shape> GatherUpstreamShapesFromGuids(IStep currentStep, List<Shape> seedShapes, Dictionary<string, IStep> allStepsLookup)
+        {
+            List<Shape> inputShapes = new List<Shape>();
+
+            // Root nodes with no connections behind them ingest the baseline shape data
+            if (currentStep.beforeGuids == null || currentStep.beforeGuids.Count == 0)
+            {
+                if (seedShapes != null) inputShapes.AddRange(seedShapes);
+                return inputShapes;
+            }
+
+            // Otherwise, harvest shapes across all connected input ports
+            foreach (string upstreamGuid in currentStep.beforeGuids)
+            {
+                if (allStepsLookup.TryGetValue(upstreamGuid, out IStep upstreamStep))
+                {
+                    if (upstreamStep == null || upstreamStep.branchCache == null) continue;
+
+                    foreach (var cacheBranch in upstreamStep.branchCache)
+                    {
+                        if (cacheBranch.Value != null)
+                        {
+                            inputShapes.AddRange(cacheBranch.Value);
+                        }
+                    }
+                }
+            }
+
+            return inputShapes;
         }
 
         private void ProcessSubstitutionGraph(List<Shape> shapes)
@@ -189,6 +327,66 @@ namespace Gbe.ShapeGrammar
             for (int i = root.childCount - 1; i >= 0; i--)
             {
                 DestroyImmediate(root.GetChild(i).gameObject);
+            }
+        }
+
+        public void ExecuteCompiledGraphPipeline(List<IStep> sortedExecutionList)
+        {
+            // 1. Clear out old historical data states across your scene run
+            Dictionary<string, IStep> allStepsLookup = new Dictionary<string, IStep>();
+            foreach (var step in sortedExecutionList)
+            {
+                if (step.branchCache != null) step.branchCache.Clear();
+                allStepsLookup[step.guid] = step;
+            }
+
+            // 2. Build the initial "Seed Shape" from your Unity Inspector's input vertices coordinates
+            List<System.Numerics.Vector3> initialPoints = new List<System.Numerics.Vector3>();
+            foreach (UnityEngine.Vector3 v in inputVertices)
+            {
+                initialPoints.Add(new System.Numerics.Vector3(v.x, v.y, v.z));
+            }
+
+            // Create the master starting canvas polygon
+            Shape seedShape = new Shape(initialPoints);
+            List<Shape> seedList = new List<Shape> { seedShape };
+
+            // 3. Process each step sequentially along your topologically sorted execution list
+            foreach (IStep step in sortedExecutionList)
+            {
+                if (step.isMasterNode) continue;
+
+                // Inject dynamic math properties immediately before running operations
+                GrammarEngineUtility.ResolveValueBindings(step, allStepsLookup);
+
+                Operation op = step.GetOperation();
+                if (op != null)
+                {
+                    // --- UPDATED: Pass the seed shape list into the utility gatherer ---
+                    List<Shape> inputShapes = GrammarEngineUtility.GatherUpstreamShapes(step, seedList);
+                    List<Shape> outputShapes = new List<Shape>();
+
+                    // Run geometry manipulations
+                    foreach (var shape in inputShapes)
+                    {
+                        var results = op.Apply(shape);
+                        if (results != null) outputShapes.AddRange(results);
+                    }
+
+                    // --- UPDATED: Cache output data fields so downstream slots read them cleanly ---
+                    GrammarEngineUtility.StoreDownstreamShapes(step, outputShapes);
+                }
+            }
+
+            // 4. Expose final output data out to your scene graph view visualization routines!
+            // Simply fetch the shapes cached by the last node(s) in the chain to draw or instantiate them.
+            if (sortedExecutionList.Count > 0)
+            {
+                IStep finalStep = sortedExecutionList[sortedExecutionList.Count - 1];
+                if (finalStep.branchCache != null && finalStep.branchCache.TryGetValue(0, out List<Shape> finalShapes))
+                {
+                    this.generatedTriangles = finalShapes; // Update display loops
+                }
             }
         }
 

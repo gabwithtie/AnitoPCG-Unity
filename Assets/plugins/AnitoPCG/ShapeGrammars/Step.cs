@@ -20,6 +20,15 @@ namespace Gbe.ShapeGrammar
     }
 
     [Serializable]
+    public struct OperationOverride
+    {
+        public string fieldName;
+        public float value_single;
+        public Vector3 value_3;
+        public string value_string;
+    }
+
+    [Serializable]
     public abstract class IStep
     {
         public bool isMasterNode = false;
@@ -39,14 +48,17 @@ namespace Gbe.ShapeGrammar
 
         public List<PropertyBinding> valueBindings = new List<PropertyBinding>();
         public List<StepDependency> dependencies = new List<StepDependency>();
+        public List<OperationOverride> overrides = new List<OperationOverride>();
+
         [NonSerialized] public Dictionary<int, List<Shape>> branchCache = new Dictionary<int, List<Shape>>();
 
         public abstract Operation GetOperation();
     }
 
+    [Serializable]
     public class Step<T> : IStep where T : Operation, new()
     {
-        public T operation = new T();
+        [NonSerialized] public T operation = new T();
         public override Operation GetOperation() => operation;
         public Step(T customOperation) => operation = customOperation;
         public Step() { }

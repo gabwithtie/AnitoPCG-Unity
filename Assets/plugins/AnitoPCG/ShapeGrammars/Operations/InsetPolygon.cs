@@ -5,6 +5,7 @@ using System.Numerics;
 
 namespace Gbe.ShapeGrammar
 {
+    [Serializable]
     public class InsetPolygon : Operation
     {
         public enum Mode { Inner, Border }
@@ -14,12 +15,6 @@ namespace Gbe.ShapeGrammar
         public Mode OperationMode { get; set; } = Mode.Inner;
         public JoinType JoinTypeSetting { get; set; } = JoinType.Miter;
         public float MiterLimit { get; set; } = 2.0f;
-
-        public InsetPolygon(float amount = 0.2f, Mode mode = Mode.Inner)
-        {
-            InsetAmount = amount;
-            OperationMode = mode;
-        }
 
         public override List<Shape> Apply(Shape shape)
         {

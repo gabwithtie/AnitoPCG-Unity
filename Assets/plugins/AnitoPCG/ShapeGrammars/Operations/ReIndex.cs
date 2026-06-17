@@ -7,6 +7,7 @@ namespace Gbe.ShapeGrammar
 {
     using Vector3 = System.Numerics.Vector3;
 
+    [Serializable]
     public class ReIndex : Operation
     {
         [Tooltip("Shifts the starting vertex (Index 0). Supports positive values (forward) and negative values (backward).")]

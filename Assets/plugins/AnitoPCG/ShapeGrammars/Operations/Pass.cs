@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Gbe.ShapeGrammar
 {
+    [Serializable]
     public class Pass : Operation
     {
         public override List<Shape> Apply(Shape shape)
