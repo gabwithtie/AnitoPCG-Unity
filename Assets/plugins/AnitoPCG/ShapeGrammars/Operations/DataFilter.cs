@@ -9,12 +9,28 @@ namespace Gbe.ShapeGrammar
         public string MetadataKey { get; set; } = "i";
         public int TargetValue { get; set; } = 0;
         public bool InvertFilter { get; set; } = false;
+        public bool MoreThan { get; set; } = false;
+        public bool LessThan { get; set; } = false;
 
         public override List<Shape> Apply(Shape shape)
         {
             bool hasTargetTag = shape.Data.TryGetValue(MetadataKey, out var values) &&
-                                values.Count > 0 &&
-                                values[0] == TargetValue;
+                                values.Count > 0;
+
+            int tagValue = hasTargetTag ? values[0] : 0;
+
+            if (MoreThan)
+            {
+                hasTargetTag = tagValue > TargetValue;
+            }
+            else if (LessThan)
+            {
+                hasTargetTag = tagValue < TargetValue;
+            }
+            else
+            {
+                hasTargetTag = tagValue == TargetValue;
+            }
 
             // Xor logic to handle clean standard or inverted pass-through conditions
             if (hasTargetTag ^ InvertFilter)

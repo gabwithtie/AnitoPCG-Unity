@@ -5,21 +5,17 @@ using UnityEngine;
 namespace Gbe.ShapeGrammar
 {
     [Serializable]
-    public class SubstitutionEdge
+    public struct SubstitutionStep
     {
-        public string sourceNodeGuid;
-        public string sourcePortName;
-        public string targetNodeGuid;
-        public string targetPortName;
+        public List<string> requiredFlags;
+        public bool clampIndex; // loops back to 0 on overflow if false
+        public string indexerFlag; // defaults to index 0 if indexerFlag does not exist in shape data
+        public List<GameObject> indexedPrefab; // Should always have 1 element because the first element is always the fallback
     }
-
-    // Inside SubstitutionSchemeAsset:
 
     [CreateAssetMenu(fileName = "NewSubstitutionScheme", menuName = "Shape Grammar/Substitution Scheme")]
     public class SubstitutionSchemeAsset : ScriptableObject
     {
-        [SerializeReference]
-        public List<ISubStep> serializedSteps = new List<ISubStep>();
-        public List<SubstitutionEdge> serializedEdges = new List<SubstitutionEdge>();
+        public List<SubstitutionStep> serializedSteps = new();
     }
 }

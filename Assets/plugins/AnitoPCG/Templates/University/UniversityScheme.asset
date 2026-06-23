@@ -12,8 +12,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c073d08f9ceb8642ba6ae1f557de6fd, type: 3}
   m_Name: UniversityScheme
   m_EditorClassIdentifier: Assembly-CSharp-firstpass::Gbe.ShapeGrammar.SubstitutionSchemeAsset
-  serializedSteps: []
-  serializedEdges: []
-  references:
-    version: 2
-    RefIds: []
+  serializedSteps:
+  - requiredFlags:
+    - facade
+    clampIndex: 1
+    indexerFlag: 
+    indexedPrefab:
+    - {fileID: 8765964144329729546, guid: dcab0d5859085a74d953ae5c4d64eac8, type: 3}
+  - requiredFlags:
+    - floormesh
+    clampIndex: 1
+    indexerFlag: floormesh
+    indexedPrefab:
+    - {fileID: 8765964144329729546, guid: bf9dd7519bf869d488cc77f76835e746, type: 3}
+    - {fileID: 3181777446895686972, guid: 8b5908873e05bde4698f9b6c859ea42a, type: 3}
+    - {fileID: 6239512234054734003, guid: 3667b641acef5d340a048ed24656f9ac, type: 3}
+    - {fileID: 8158072463840940632, guid: a9e0489d9a706eb469fd4a494720ca25, type: 3}
+  - requiredFlags:
+    - triangle
+    clampIndex: 1
+    indexerFlag: triangle
+    indexedPrefab:
+    - {fileID: 5464810357223943118, guid: fb8d5d1e76340ea47a3db39046637d3d, type: 3}
+  - requiredFlags:
+    - innerwall
+    clampIndex: 1
+    indexerFlag: 
+    indexedPrefab:
+    - {fileID: 5464810357223943118, guid: e60701c34adc98840be021163fc9c85a, type: 3}

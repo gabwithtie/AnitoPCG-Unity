@@ -58,61 +58,69 @@ namespace Gbe.ShapeGrammar
 
         private void ProcessSubstitutionGraph(List<Shape> shapes)
         {
-            if (substitutionAsset.serializedSteps == null || substitutionAsset.serializedSteps.Count == 0) return;
+            if (substitutionAsset == null || substitutionAsset.serializedSteps == null || substitutionAsset.serializedSteps.Count == 0) return;
 
-            // Find the master entry point
-            var masterInput = substitutionAsset.serializedSteps.Find(s => s.isMasterInput);
-            if (masterInput == null) return;
-
-            // Maps to track active routing states
-            var nodeQueue = new Queue<ISubStep>();
-            var shapesAtNode = new Dictionary<string, List<Shape>>();
-
-            nodeQueue.Enqueue(masterInput);
-            shapesAtNode[masterInput.guid] = new List<Shape>(shapes);
-
+            // Maps to track which prefab gets assigned to which geometric shapes
             var finalTerminalMaps = new Dictionary<GameObject, List<Shape>>();
 
-            // Route data forward across branches
-            while (nodeQueue.Count > 0)
+            // Step 1: Flat Lookup Resolution Pass
+            foreach (var shape in shapes)
             {
-                var currentNode = nodeQueue.Dequeue();
-                if (!shapesAtNode.TryGetValue(currentNode.guid, out var currentShapes) || currentShapes.Count == 0)
-                    continue;
+                GameObject assignedPrefab = null;
 
-                if (currentNode is PrefabVectorMapStep finalMapNode)
+                foreach (var step in substitutionAsset.serializedSteps)
                 {
-                    // Terminal branch node identified: Compile assignments data matrix 
-                    var partialMap = finalMapNode.CompilePrefabAssignments(currentShapes);
-                    foreach (var pair in partialMap)
+                    // Verify all required flags for this step exist in the shape's metadata keys
+                    bool flagMatch = true;
+                    if (step.requiredFlags != null && step.requiredFlags.Count > 0)
                     {
-                        if (!finalTerminalMaps.ContainsKey(pair.Key)) finalTerminalMaps[pair.Key] = new List<Shape>();
-                        finalTerminalMaps[pair.Key].AddRange(pair.Value);
+                        foreach (var flag in step.requiredFlags)
+                        {
+                            if (!shape.Data.ContainsKey(flag))
+                            {
+                                flagMatch = false;
+                                break;
+                            }
+                        }
                     }
-                    continue;
+
+                    // If the shape satisfies this step's criteria, determine which prefab index to extract
+                    if (flagMatch)
+                    {
+                        if (step.indexedPrefab == null || step.indexedPrefab.Count == 0)
+                            continue;
+
+                        int index = 0;
+
+                        // Extract index value using indexerFlag if provided
+                        if (!string.IsNullOrEmpty(step.indexerFlag) && shape.Data.TryGetValue(step.indexerFlag, out var values) && values.Count > 0)
+                        {
+                            index = values[0];
+                            if (index < 0) index = 0;
+
+                            // Handle index out of bounds bounds configurations
+                            if (index >= step.indexedPrefab.Count)
+                            {
+                                index = step.clampIndex ? step.indexedPrefab.Count - 1 : index % step.indexedPrefab.Count;
+                            }
+                        }
+
+                        assignedPrefab = step.indexedPrefab[index];
+                        break; // First match wins (simulating an ordered fallback table)
+                    }
                 }
 
-                // Call evaluation to split lists matching branching definitions
-                var routingDataOutputs = currentNode.Evaluate(currentShapes);
-                foreach (var branch in routingDataOutputs)
+                // If a matching configuration rule mapped a valid blueprint asset, queue it for instantiation
+                if (assignedPrefab != null)
                 {
-                    string targetNodeGuid = branch.Key;
-                    List<Shape> routedShapes = branch.Value;
+                    if (!finalTerminalMaps.ContainsKey(assignedPrefab))
+                        finalTerminalMaps[assignedPrefab] = new List<Shape>();
 
-                    if (routedShapes == null || routedShapes.Count == 0) continue;
-
-                    if (!shapesAtNode.ContainsKey(targetNodeGuid))
-                    {
-                        shapesAtNode[targetNodeGuid] = new List<Shape>();
-                        var nextStepTarget = substitutionAsset.serializedSteps.Find(s => s.guid == targetNodeGuid);
-                        if (nextStepTarget != null) nodeQueue.Enqueue(nextStepTarget);
-                    }
-
-                    shapesAtNode[targetNodeGuid].AddRange(routedShapes);
+                    finalTerminalMaps[assignedPrefab].Add(shape);
                 }
             }
 
-            // Step 3: Instantiation Loop (3-Vertex Coordinate Space Rotation Alignment and Scaling)
+            // Step 2: Instantiation Loop (3-Vertex Coordinate Space Rotation Alignment and Scaling)
             Transform parentTransform = this.transform;
             foreach (var assignment in finalTerminalMaps)
             {
@@ -150,7 +158,6 @@ namespace Gbe.ShapeGrammar
                     UnityEngine.Vector3 spawnPos = p0;
 
                     // 5. Construct Final Structural Orientation Matrix
-                    // If vectors are valid, use LookRotation passing your calculated forward and upward components
                     UnityEngine.Quaternion spawnRot = UnityEngine.Quaternion.identity;
                     if (localForward.sqrMagnitude > 0.001f && localUp.sqrMagnitude > 0.001f)
                     {
@@ -158,7 +165,6 @@ namespace Gbe.ShapeGrammar
                     }
 
                     // Configure local scale transformations matching structural geometric metrics
-                    // Assumes your blueprint prefab asset is natively a 1m x 1m x 1m primitive cube/mesh bound
                     UnityEngine.Vector3 spawnScale = new UnityEngine.Vector3(localRight.magnitude, localUp.magnitude, 1.0f);
 
 #if UNITY_EDITOR
@@ -170,8 +176,8 @@ namespace Gbe.ShapeGrammar
                         spawnedObj.transform.localScale = spawnScale;
                     }
 #else
-        GameObject spawnedObj = Instantiate(prefabBlueprint, spawnPos, spawnRot, parentTransform);
-        spawnedObj.transform.localScale = spawnScale;
+            GameObject spawnedObj = Instantiate(prefabBlueprint, spawnPos, spawnRot, parentTransform);
+            spawnedObj.transform.localScale = spawnScale;
 #endif
                 }
             }
