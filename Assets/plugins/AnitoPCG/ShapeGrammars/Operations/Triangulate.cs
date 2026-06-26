@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using UnityEngine;
 
@@ -11,15 +12,8 @@ namespace Gbe.ShapeGrammar
     [Serializable]
     public class Triangulate : Operation
     {
-        // Toggle to automatically detect winding and prevent "inside-out" triangulation
         public bool AutoFixWinding { get; set; } = true;
-
-        [Tooltip("Splits all evaluated triangles into perfect right triangles by dropping an altitude line from their largest angle.")]
         public bool SplitIntoRightTriangles { get; set; } = false;
-
-        public Triangulate()
-        {
-        }
 
         public override List<Shape> Apply(Shape shape)
         {
@@ -27,7 +21,7 @@ namespace Gbe.ShapeGrammar
             int n = shape.Vertices.Count;
             if (n < 3) return baseTriangles;
 
-            // 1. Calculate Newell's Normal to find the 3D plane
+            // 1. Calculate Newell's Normal and 2D Plane
             Vector3 normal = Vector3.Zero;
             for (int i = 0; i < n; i++)
             {
@@ -37,78 +31,70 @@ namespace Gbe.ShapeGrammar
                 normal.Y += (curr.Z - next.Z) * (curr.X + next.X);
                 normal.Z += (curr.X - next.X) * (curr.Y + next.Y);
             }
-
-            if (normal.LengthSquared() < 0.000001f) return baseTriangles;
             normal = Vector3.Normalize(normal);
 
-            // 2. Project to 2D for bulletproof math
+            Vector3 xAxis = Vector3.Normalize(shape.Vertices[1] - shape.Vertices[0]);
+            Vector3 yAxis = Vector3.Normalize(Vector3.Cross(normal, xAxis));
             Vector3 origin = shape.Vertices[0];
-            Vector3 edgeA = Vector3.Normalize(shape.Vertices[1] - origin);
-            Vector3 edgeB = Vector3.Normalize(Vector3.Cross(normal, edgeA));
 
-            List<Vector2> poly2D = new List<Vector2>(n);
+            List<Vector2> poly2D = new List<Vector2>();
+            List<int> indices = new List<int>();
+
             for (int i = 0; i < n; i++)
             {
-                Vector3 vec = shape.Vertices[i] - origin;
-                poly2D.Add(new Vector2(Vector3.Dot(vec, edgeA), Vector3.Dot(vec, edgeB)));
+                Vector3 local = shape.Vertices[i] - origin;
+                poly2D.Add(new Vector2(Vector3.Dot(local, xAxis), Vector3.Dot(local, yAxis)));
+                indices.Add(i);
             }
 
-            // 3. Calculate 2D Signed Area
-            float signedArea = 0.0f;
-            for (int i = 0; i < n; i++)
-            {
-                int j = (i + 1) % n;
-                signedArea += (poly2D[i].X * poly2D[j].Y - poly2D[j].X * poly2D[i].Y);
-            }
+            // Ensure CCW Winding
+            if (AutoFixWinding && GetSignedArea(poly2D) < 0) indices.Reverse();
 
-            bool isCW = signedArea < 0.0f;
-
-            // 4. Setup working indices
-            List<int> currentIndices = new List<int>(n);
-            for (int i = 0; i < n; ++i)
-            {
-                if (AutoFixWinding && isCW)
-                {
-                    currentIndices.Add(n - 1 - i);
-                }
-                else
-                {
-                    currentIndices.Add(i);
-                }
-            }
-
-            // 5. 2D Ear Clipping Loop
-            int attempts = 0;
-            int maxAttempts = n * 2;
-
-            while (currentIndices.Count > 3 && attempts < maxAttempts)
+            // 2. EAR CLIPPING LOOP
+            int failSafe = indices.Count * 2;
+            while (indices.Count > 3 && failSafe-- > 0)
             {
                 bool earFound = false;
-                for (int i = 0; i < currentIndices.Count; ++i)
+                for (int i = 0; i < indices.Count; i++)
                 {
-                    int prevIdx = (i + currentIndices.Count - 1) % currentIndices.Count;
-                    int nextIdx = (i + 1) % currentIndices.Count;
+                    int prev = (i == 0) ? indices.Count - 1 : i - 1;
+                    int next = (i == indices.Count - 1) ? 0 : i + 1;
 
-                    int a = currentIndices[prevIdx];
-                    int b = currentIndices[i];
-                    int c = currentIndices[nextIdx];
-
-                    if (IsEar2D(a, b, c, poly2D, currentIndices))
+                    if (IsEar(poly2D, indices, prev, i, next))
                     {
-                        baseTriangles.Add(CreateTriangle(shape, a, b, c));
-                        currentIndices.RemoveAt(i);
+                        List<Vector3> triVerts = new List<Vector3>
+                        {
+                            shape.Vertices[indices[prev]],
+                            shape.Vertices[indices[i]],
+                            shape.Vertices[indices[next]]
+                        };
+
+                        Shape tri = new Shape(triVerts);
+                        if (shape.Data != null) tri.Data = new Dictionary<string, List<int>>(shape.Data);
+                        baseTriangles.Add(tri);
+
+                        indices.RemoveAt(i);
                         earFound = true;
                         break;
                     }
                 }
 
+                // If the failsafe trips, break out to prevent unity from freezing
                 if (!earFound) break;
-                attempts++;
             }
 
-            if (currentIndices.Count == 3)
+            // Add final triangle
+            if (indices.Count == 3)
             {
-                baseTriangles.Add(CreateTriangle(shape, currentIndices[0], currentIndices[1], currentIndices[2]));
+                List<Vector3> triVerts = new List<Vector3>
+                {
+                    shape.Vertices[indices[0]],
+                    shape.Vertices[indices[1]],
+                    shape.Vertices[indices[2]]
+                };
+                Shape tri = new Shape(triVerts);
+                if (shape.Data != null) tri.Data = new Dictionary<string, List<int>>(shape.Data);
+                baseTriangles.Add(tri);
             }
 
             // --- SUBDIVIDE INTO DUAL RIGHT TRIANGLES MODULE ---
@@ -186,35 +172,50 @@ namespace Gbe.ShapeGrammar
             return rightTriangles;
         }
 
-        private Shape CreateTriangle(Shape original, int aIdx, int bIdx, int cIdx)
+        private float GetSignedArea(List<Vector2> poly)
         {
-            Shape tri = new Shape(new List<Vector3> { original.Vertices[aIdx], original.Vertices[bIdx], original.Vertices[cIdx] });
-            tri.Data = new Dictionary<string, List<int>>(original.Data);
-
-            List<int> edgeIndices = new List<int>();
-            int[] triIndices = { aIdx, bIdx, cIdx };
-            int n = original.Vertices.Count;
-
-            for (int i = 0; i < 3; ++i)
+            float area = 0;
+            for (int i = 0; i < poly.Count; i++)
             {
-                int startOrig = triIndices[i];
-                int endOrig = triIndices[(i + 1) % 3];
+                Vector2 curr = poly[i];
+                Vector2 next = poly[(i + 1) % poly.Count];
+                area += (curr.X * next.Y) - (next.X * curr.Y);
+            }
+            return area * 0.5f;
+        }
 
-                if (endOrig == (startOrig + 1) % n || startOrig == (endOrig + 1) % n)
+        private bool IsEar(List<Vector2> poly, List<int> indices, int prevNode, int currNode, int nextNode)
+        {
+            Vector2 a = poly[indices[prevNode]];
+            Vector2 b = poly[indices[currNode]];
+            Vector2 c = poly[indices[nextNode]];
+
+            // 1. Must be strictly convex. 
+            // A strict epsilon > 0.0001f prevents flat, collapsed slit edges from being parsed as ears.
+            float cross = (b.X - a.X) * (c.Y - b.Y) - (b.Y - a.Y) * (c.X - b.X);
+            if (cross <= 0.0001f) return false;
+
+            // 2. Point in Triangle test with Keyhole Tolerance
+            for (int i = 0; i < indices.Count; i++)
+            {
+                if (i == prevNode || i == currNode || i == nextNode) continue;
+
+                Vector2 p = poly[indices[i]];
+
+                // THE FIX: Skip this vertex if it physically occupies the exact same spot 
+                // as one of the ear's vertices. This prevents the coincident vertices of a boolean slit 
+                // from registering as being "inside" the triangle.
+                if (Vector2.DistanceSquared(p, a) < 0.0001f ||
+                    Vector2.DistanceSquared(p, b) < 0.0001f ||
+                    Vector2.DistanceSquared(p, c) < 0.0001f)
                 {
-                    if (edgeIndices.Count == 0 || edgeIndices[edgeIndices.Count - 1] != i)
-                    {
-                        edgeIndices.Add(i);
-                    }
-                    edgeIndices.Add((i + 1) % 3);
+                    continue;
                 }
+
+                if (IsPointInTriangle2D(a, b, c, p)) return false;
             }
 
-            if (edgeIndices.Count > 0)
-            {
-                tri.Data["edge"] = edgeIndices;
-            }
-            return tri;
+            return true;
         }
 
         private bool IsPointInTriangle2D(Vector2 a, Vector2 b, Vector2 c, Vector2 p)
@@ -236,21 +237,8 @@ namespace Gbe.ShapeGrammar
             float u = (d11 * d02 - d01 * d12) * invDenom;
             float v = (d00 * d12 - d01 * d02) * invDenom;
 
-            return (u >= -0.001f) && (v >= -0.001f) && (u + v <= 1.001f);
-        }
-
-        private bool IsEar2D(int a, int b, int c, List<Vector2> poly, List<int> indices)
-        {
-            Vector2 A = poly[a], B = poly[b], C = poly[c];
-            float cross = (B.X - A.X) * (C.Y - B.Y) - (B.Y - A.Y) * (C.X - B.X);
-            if (cross <= 0.0001f) return false;
-
-            foreach (int idx in indices)
-            {
-                if (idx == a || idx == b || idx == c) continue;
-                if (IsPointInTriangle2D(A, B, C, poly[idx])) return false;
-            }
-            return true;
+            // Allow standard > 0 tolerance inclusion 
+            return (u >= 0) && (v >= 0) && (u + v <= 1);
         }
     }
 }

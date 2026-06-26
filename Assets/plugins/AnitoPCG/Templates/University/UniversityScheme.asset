@@ -40,3 +40,11 @@ MonoBehaviour:
     indexerFlag: 
     indexedPrefab:
     - {fileID: 5464810357223943118, guid: e60701c34adc98840be021163fc9c85a, type: 3}
+  - requiredFlags:
+    - roof_part
+    clampIndex: 1
+    indexerFlag: roof_part
+    indexedPrefab:
+    - {fileID: 5464810357223943118, guid: 77c1554f42a65014699bbd1b312ccf40, type: 3}
+    - {fileID: 5464810357223943118, guid: 2685fd984de5d07469104efa2926ce9b, type: 3}
+    - {fileID: 5464810357223943118, guid: c9ca105355eafd240836772d6106cabf, type: 3}
