@@ -11,29 +11,44 @@ namespace Gbe.ShapeGrammar
 
         public override List<Shape> Apply(Shape shape)
         {
+            return new List<Shape>() { shape };
+        }
+
+        public override List<Shape> ApplySet(List<Shape> shapes)
+        {
             List<Shape> output = new List<Shape>();
+            int edge_counter = 0;
 
-            if (shape.Vertices.Count < 2)
+            foreach (Shape shape in shapes)
             {
-                Fail(); // Call base operation logging warning
-                return output;
-            }
+                int this_shape_start = edge_counter;
 
-            // Create segment strings between sequential corners
-            for (int i = 1; i < shape.Vertices.Count; i++)
-            {
-                Shape newShape = new Shape(new List<Vector3> { shape.Vertices[i], shape.Vertices[i - 1] });
-                newShape.Data = new Dictionary<string, List<int>>(shape.Data); // Value clone lookup dictionary
-                newShape.Data[IndexTag] = new List<int>() { i };
-                ;
-                output.Add(newShape);
-            }
+                if (shape.Vertices.Count < 2)
+                {
+                    Fail(); // Call base operation logging warning
+                    return output;
+                }
 
-            // Tie the final loop line segment wrapping back to vertex index 0
-            Shape closingShape = new Shape(new List<Vector3> { shape.Vertices[0], shape.Vertices[shape.Vertices.Count - 1] });
-            closingShape.Data = new Dictionary<string, List<int>>(shape.Data);
-            closingShape.Data[IndexTag] = new List<int>() { 0 };
-            output.Add(closingShape);
+                // Create segment strings between sequential corners
+                for (int i = 1; i < shape.Vertices.Count; i++)
+                {
+                    edge_counter++;
+
+                    Shape newShape = new Shape(new List<Vector3> { shape.Vertices[i], shape.Vertices[i - 1] });
+                    newShape.Data = new Dictionary<string, List<int>>(shape.Data); // Value clone lookup dictionary
+                    newShape.Data[IndexTag] = new List<int>() { edge_counter };
+                    
+                    output.Add(newShape);
+                }
+
+                // Tie the final loop line segment wrapping back to vertex index 0
+                Shape closingShape = new Shape(new List<Vector3> { shape.Vertices[0], shape.Vertices[shape.Vertices.Count - 1] });
+                closingShape.Data = new Dictionary<string, List<int>>(shape.Data);
+                closingShape.Data[IndexTag] = new List<int>() { this_shape_start };
+                output.Add(closingShape);
+
+                edge_counter++;
+            }
 
             return output;
         }

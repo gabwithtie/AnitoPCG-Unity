@@ -11,13 +11,14 @@ namespace Gbe.ShapeGrammar
         public float InsetHeight { get; set; } = 0.0f;
         public float MiterLimit { get; set; } = 2.0f;
 
-        // --- NEW: Custom Tag Definition Properties ---
         public string OuterEdgeTag { get; set; } = "outer_edge";
         public string InnerEdgeTag { get; set; } = "inner_edge";
 
+        // --- NEW PROPERTY: Custom Tag for Lateral Corner Connectors ---
+        public string CornerEdgeTag { get; set; } = "corner_edge";
+
         public override List<Shape> Apply(Shape shape)
         {
-            // At least a triangle footprint is required to define a face area
             if (shape.Vertices.Count < 3) return new List<Shape> { shape };
 
             int n = shape.Vertices.Count;
@@ -26,7 +27,6 @@ namespace Gbe.ShapeGrammar
             Vector3 origin = shape.Vertices[0];
             Vector3 edgeA = Vector3.Normalize(shape.Vertices[1] - origin);
 
-            // Compute Newell's Normal for the polygon's 3D orientation plane
             Vector3 normal = Vector3.Zero;
             for (int i = 0; i < n; i++)
             {
@@ -146,19 +146,24 @@ namespace Gbe.ShapeGrammar
                 {
                     Shape edgeQuad = new Shape(cleanVerts);
                     edgeQuad.Data = new Dictionary<string, List<int>>(shape.Data);
-                    edgeQuad.SetDataSingle("is_border", 1); // Keep the global border tag for convenience
+                    edgeQuad.SetDataSingle("is_border", 1);
 
-                    // --- THE FIX: Assign matching structural indices to both requested tags ---
-                    int matchingEdgeIndex = i + 1; // Makes it 1-based (1, 2, 3...)
+                    int matchingEdgeIndex = i + 1; // 1-based structural matching indices
 
                     if (!string.IsNullOrEmpty(OuterEdgeTag))
                     {
-                        edgeQuad.SetDataSingle(OuterEdgeTag, matchingEdgeIndex);
+                        edgeQuad.SetDataSingle(OuterEdgeTag, 1);
                     }
 
-                    if (!string.IsNullOrEmpty(InnerEdgeTag))
+                    if (!string.IsNullOrEmpty(InnerEdgeTag) && cleanVerts.Count == 4)
                     {
-                        edgeQuad.SetDataSingle(InnerEdgeTag, matchingEdgeIndex);
+                        edgeQuad.SetDataSingle(InnerEdgeTag, 3);
+                    }
+
+                    // --- NEW LOGIC: Inject index-tags to isolate corner-edges later ---
+                    if (!string.IsNullOrEmpty(CornerEdgeTag))
+                    {
+                        edgeQuad.Data.Add(CornerEdgeTag, new List<int>() { 0, 2 });
                     }
 
                     results.Add(edgeQuad);

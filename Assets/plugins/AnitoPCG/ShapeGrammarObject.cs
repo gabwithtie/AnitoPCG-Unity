@@ -33,11 +33,18 @@ namespace Gbe.ShapeGrammar
         public List<Shape> generatedTriangles = new List<Shape>();
         private RuntimeGraphTree tree = new RuntimeGraphTree();
 
-        [ContextMenu("Execute Full Generation & Substitution")]
-        public void ExecuteGrammarChain()
+        private void OnValidate()
         {
-            if (graphAsset == null) return;
+            tree.SetOnEvaluate(OnDoneNewEvaluation);
+        }
 
+        public RuntimeGraphTree GetTree()
+        {
+            return tree;
+        }
+
+        public List<System.Numerics.Vector3> InitializeEvaluation()
+        {
             // Convert scene coordinates to pipeline coordinates
             List<System.Numerics.Vector3> sysVertices = inputVertices
                 .Select(v => {
@@ -46,8 +53,12 @@ namespace Gbe.ShapeGrammar
                 }).ToList();
 
             tree.InitializeFromAsset(graphAsset);
-            generatedTriangles = tree.Evaluate(sysVertices);
 
+            return sysVertices;
+        }
+
+        private void OnDoneNewEvaluation(List<Shape> generatedTriangles)
+        {
             // Substitution Pipeline
             if (substitutionAsset != null)
             {

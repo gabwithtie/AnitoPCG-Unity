@@ -49,10 +49,24 @@ namespace Gbe.ShapeGrammar
 
             if (GUILayout.Button("Regenerate Shape Grammar", GUILayout.Height(35)))
             {
-                Undo.RecordObject(pathComponent, "Execute Shape Grammar");
-                pathComponent.ExecuteGrammarChain();
-                SceneView.RepaintAll();
+                RegenerateScene();
             }
+        }
+
+        private void RegenerateScene()
+        {
+            List<Tree> allTreesInScene = new();
+            List<List<System.Numerics.Vector3>> treeSeeds = new();
+
+            foreach (var shapeGrammarObject in FindObjectsByType<ShapeGrammarObject>(FindObjectsSortMode.None))
+            {
+                allTreesInScene.Add(shapeGrammarObject.GetTree());
+                treeSeeds.Add(shapeGrammarObject.InitializeEvaluation());
+            }
+
+            Gbe.ShapeGrammar.SpatialGraphRegistry.GenerateScene(allTreesInScene, treeSeeds);
+
+            SceneView.RepaintAll();
         }
 
         private void OnSceneGUI()
@@ -65,7 +79,7 @@ namespace Gbe.ShapeGrammar
                 isDraggingHandle = false;
 
                 // Trigger the generation!
-                pathComponent.ExecuteGrammarChain();
+                RegenerateScene();
             }
 
             // =========================================================

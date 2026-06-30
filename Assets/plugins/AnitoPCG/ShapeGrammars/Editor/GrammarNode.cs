@@ -312,6 +312,8 @@ namespace Gbe.ShapeGrammar.Editor
             if (RuntimeStep == null || RuntimeStep.overrides == null || RuntimeStep.overrides.Count == 0)
                 return;
 
+            RuntimeStep.HydrateSavedOverrides();
+
             Operation operationalInstance = RuntimeStep.GetOperation();
             if (operationalInstance == null) return;
 
@@ -329,12 +331,9 @@ namespace Gbe.ShapeGrammar.Editor
                 Type targetType = prop != null ? prop.PropertyType : (field != null ? field.FieldType : null);
                 if (targetType == null) continue;
 
-                object calculatedValue = null;
-
                 // 2. Safely extract control references by querying down the element hierarchy
                 if (targetType == typeof(float))
                 {
-                    calculatedValue = ovr.value_single;
                     // THE FIX: Query recursively (.Q) so it finds the FloatField even inside a custom row wrapper
                     var targetControl = uiField is FloatField ? uiField as FloatField : uiField.Q<FloatField>();
                     if (targetControl != null) targetControl.SetValueWithoutNotify(ovr.value_single);
@@ -342,45 +341,31 @@ namespace Gbe.ShapeGrammar.Editor
                 else if (targetType == typeof(int))
                 {
                     int intVal = (int)ovr.value_single;
-                    calculatedValue = intVal;
                     var targetControl = uiField is IntegerField ? uiField as IntegerField : uiField.Q<IntegerField>();
                     if (targetControl != null) targetControl.SetValueWithoutNotify(intVal);
                 }
                 else if (targetType == typeof(bool))
                 {
                     bool boolVal = ovr.value_single > 0.5f;
-                    calculatedValue = boolVal;
                     var targetControl = uiField is Toggle ? uiField as Toggle : uiField.Q<Toggle>();
                     if (targetControl != null) targetControl.SetValueWithoutNotify(boolVal);
                 }
                 else if (targetType == typeof(string))
                 {
-                    calculatedValue = ovr.value_string;
                     var targetControl = uiField is TextField ? uiField as TextField : uiField.Q<TextField>();
                     if (targetControl != null) targetControl.SetValueWithoutNotify(ovr.value_string);
                 }
                 else if (targetType == typeof(System.Numerics.Vector3))
                 {
-                    calculatedValue = new System.Numerics.Vector3(ovr.value_3.x, ovr.value_3.y, ovr.value_3.z);
                     var targetControl = uiField is Vector3Field ? uiField as Vector3Field : uiField.Q<Vector3Field>();
                     if (targetControl != null) targetControl.SetValueWithoutNotify(ovr.value_3);
                 }
                 else if (targetType == typeof(UnityEngine.Vector3))
                 {
-                    calculatedValue = PlayHookyToUnityVector(ovr.value_3);
                     var targetControl = uiField is Vector3Field ? uiField as Vector3Field : uiField.Q<Vector3Field>();
                     if (targetControl != null) targetControl.SetValueWithoutNotify(ovr.value_3);
                 }
-
-                // 3. Re-inject restored value parameters into backend engine structures
-                if (calculatedValue != null)
-                {
-                    if (prop != null) prop.SetValue(operationalInstance, calculatedValue);
-                    else if (field != null) field.SetValue(operationalInstance, calculatedValue);
-                }
             }
         }
-
-        private UnityEngine.Vector3 PlayHookyToUnityVector(UnityEngine.Vector3 incoming) => incoming;
     }
 }
