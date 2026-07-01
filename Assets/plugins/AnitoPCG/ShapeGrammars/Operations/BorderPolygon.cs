@@ -163,7 +163,7 @@ namespace Gbe.ShapeGrammar
                     // --- NEW LOGIC: Inject index-tags to isolate corner-edges later ---
                     if (!string.IsNullOrEmpty(CornerEdgeTag))
                     {
-                        edgeQuad.Data.Add(CornerEdgeTag, new List<int>() { 0, 2 });
+                        edgeQuad.Data.Add(CornerEdgeTag , new List<int>() { 0, 2 });
                     }
 
                     results.Add(edgeQuad);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 
 namespace Gbe.ShapeGrammar
@@ -43,6 +44,9 @@ namespace Gbe.ShapeGrammar
                 // finalPass = true calculates the master sink and processes any spatial queries
                 List<Shape> finalGeometry = allTreesInScene[i].Evaluate(treeSeeds[i], finalPass: true);
             }
+
+            
+
         }
 
         public struct Bounds2D

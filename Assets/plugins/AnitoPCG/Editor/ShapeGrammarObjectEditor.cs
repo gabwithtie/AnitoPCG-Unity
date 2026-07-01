@@ -1,6 +1,8 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using UnityEditor;
+using UnityEngine;
 
 namespace Gbe.ShapeGrammar
 {
@@ -55,6 +57,9 @@ namespace Gbe.ShapeGrammar
 
         private void RegenerateScene()
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            
+
             List<Tree> allTreesInScene = new();
             List<List<System.Numerics.Vector3>> treeSeeds = new();
 
@@ -67,6 +72,10 @@ namespace Gbe.ShapeGrammar
             Gbe.ShapeGrammar.SpatialGraphRegistry.GenerateScene(allTreesInScene, treeSeeds);
 
             SceneView.RepaintAll();
+
+            stopwatch.Stop();
+
+            UnityEngine.Debug.Log($"Function took: {stopwatch.ElapsedMilliseconds} ms");
         }
 
         private void OnSceneGUI()
