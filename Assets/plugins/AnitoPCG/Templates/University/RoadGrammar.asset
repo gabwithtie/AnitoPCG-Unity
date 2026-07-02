@@ -141,7 +141,7 @@ MonoBehaviour:
         - fieldName: DependencyName
           value_single: 0
           value_3: {x: 0, y: 0, z: 0}
-          value_string: footprint
+          value_string: road_footprint
     - rid: 1483956550277267530
       type: {class: 'Step`1[[Gbe.ShapeGrammar.ThickenPath, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
       data:

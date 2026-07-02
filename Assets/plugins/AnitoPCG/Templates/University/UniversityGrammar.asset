@@ -60,7 +60,6 @@ MonoBehaviour:
   - rid: 2735675683777019998
   - rid: 1483956550277267520
   - rid: 1483956550277267525
-  - rid: 1483956550277267523
   - rid: 2735675683777019992
   - rid: 2735675671622451275
   - rid: 2735675683777019991
@@ -76,6 +75,7 @@ MonoBehaviour:
   - rid: 2735675683777019989
   - rid: 1483956550277267553
   - rid: 1483956550277267548
+  - rid: 1483956550277267523
   serializedEdges:
   - sourceNodeGuid: b3112324-67ed-47f4-8c95-bc19eaa89963
     sourcePortName: Out
@@ -529,7 +529,7 @@ MonoBehaviour:
       data:
         isMasterNode: 0
         guid: 6f265c76-b0c8-4813-a51d-0b08dfe41e63
-        uiPosition: {x: -1451, y: 343}
+        uiPosition: {x: -1468, y: 343}
         beforeGuids: []
         forEach: 0
         flattenInputs: 0
@@ -540,7 +540,7 @@ MonoBehaviour:
         - fieldName: DependencyName
           value_single: 0
           value_3: {x: 0, y: 0, z: 0}
-          value_string: footprint
+          value_string: road_footprint
     - rid: 1483956550277267524
       type: {class: 'Step`1[[Gbe.ShapeGrammar.Boolean, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
       data:
@@ -555,7 +555,11 @@ MonoBehaviour:
         isVolatile: 0
         isStageCheckpoint: 0
         valueBindings: []
-        overrides: []
+        overrides:
+        - fieldName: InvertOperation
+          value_single: 0
+          value_3: {x: 0, y: 0, z: 0}
+          value_string: 
     - rid: 1483956550277267525
       type: {class: 'Step`1[[Gbe.ShapeGrammar.DataSetter, Assembly-CSharp-firstpass]]', ns: Gbe.ShapeGrammar, asm: Assembly-CSharp-firstpass}
       data:
